@@ -1,0 +1,40 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "importHelpers": true,
+    "module": "es2020",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "target": "ES2022",
+    "baseUrl": "src",
+    "paths": {
+      "@app/core": ["app/core/index.ts"],
+      "@app/models": ["app/models/index.ts"],
+      "@app/models/admin": ["app/models/admin/index.ts"],
+      "@app/models/manager": ["app/models/manager/index.ts"],
+      "@app/models/member": ["app/models/member/index.ts"],
+      "@app/services": ["app/services/index.ts"],
+      "@app/services/admin": ["app/services/admin/index.ts"],
+      "@app/services/manager": ["app/services/manager/index.ts"],
+      "@app/services/member": ["app/services/member/index.ts"],
+      "@app/common": ["app/common/index.ts"],
+    },
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2017",
+      "dom"
+    ],
+    "plugins": [
+      {
+        "name": "tslint-language-service"
+      }
+    ],
+    "useDefineForClassFields": false,
+    "esModuleInterop": true
+  }
+}

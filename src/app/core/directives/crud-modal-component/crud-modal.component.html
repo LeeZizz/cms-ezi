@@ -1,0 +1,22 @@
+<nb-card [status]="modalType" [size]="modalSize" [nbSpinner]="isLoading" nbSpinnerStatus="danger">
+  <nb-card-header>
+    <span>{{ title }}</span>
+    <button type="button" class="close float-right" aria-label="Close" (click)="dismissAction()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </nb-card-header>
+  <nb-card-body>
+    <div class="row">
+      <div class="col-md-12">
+        <d-crud-form [formGroup]="formGroup" [fields]="fields"></d-crud-form>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer>
+    <button type="button" class="btn btn-outline-primary margin-r-5" [disabled]="formGroup.invalid"
+            (click)="submitAction()">{{ btnSubmitTxt ?? 'Thêm mới' }}
+    </button>
+    <button type="button" class="btn btn-outline-dark" (click)="dismissAction()">{{ btnDismissTxt ?? 'Hủy bỏ' }}
+    </button>
+  </nb-card-footer>
+</nb-card>

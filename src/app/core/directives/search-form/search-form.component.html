@@ -1,0 +1,90 @@
+<form [formGroup]="searchForm" (ngSubmit)="search()">
+  <div class="container-fluid">
+    <div class="row align-items-center">
+      <div *ngFor="let f of searchControls;let i=index" [classList]="f.class">
+        <div class="form-group">
+          <ng-template [ngIf]="f.type=='input'">
+            <label [for]="f.formControl">
+              {{ f.label }}
+            </label>
+            <input [id]="f.formControl" [name]="f.formControl" [formControlName]="f.formControl"
+                   class="form-control"
+                   [placeholder]="f.placeHolder" [type]="f.typeOf">
+          </ng-template>
+          <ng-template [ngIf]="f.type=='textarea'">
+            <label [for]="f.formControl">
+              {{ f.label }}
+            </label>
+            <textarea [id]="f.formControl" [name]="f.formControl" [formControlName]="f.formControl"
+                      class="form-control"
+                      [placeholder]="f.placeHolder">
+          </textarea>
+          </ng-template>
+          <ng-template [ngIf]="f.type=='checkbox'">
+            <div class="checkbox">
+              <label>{{ f.label }}</label>
+              <label class="d-block">
+                <input type="checkbox" [id]="f.formControl" [name]="f.formControl"
+                       [checked]="getFormValue(f.formControl)"
+                       (change)="onCheckboxChange(f.formControl,$event)">
+                {{ f.placeHolder }}
+              </label>
+            </div>
+          </ng-template>
+          <ng-template [ngIf]="f.type=='select'">
+            <label [for]="f.formControl">
+              {{ f.label }}
+            </label>
+            <select [id]="f.formControl" [name]="f.formControl" [formControlName]="f.formControl"
+                    class="form-control">
+              <option *ngFor="let option of f.data"
+                      [value]="option[f.config['primaryKey']]">{{ option[f.config["labelKey"]] }}
+              </option>
+            </select>
+          </ng-template>
+          <ng-template [ngIf]="f.type=='select2'">
+            <label [for]="f.formControl">
+              {{ f.label }}
+            </label>
+            <angular2-multiselect [id]="f.formControl" [formControlName]="f.formControl"
+                                  [data]="f.data" [settings]="getDropdownSetting(f.config)">
+            </angular2-multiselect>
+          </ng-template>
+
+          <ng-template [ngIf]="f.type=='datepicker'">
+            <label [for]="getElementId(f)">
+              {{ f.label }}
+              <span class="error-msg"><i class="fa fa-times-circle"></i> {{ getErrors(f) }} </span>
+            </label>
+            <input [id]="getElementId(f)" nbInput [placeholder]="f.placeHolder" [nbDatepicker]="dateTimePicker"
+                   class="form-control" [formControlName]="f.formControl"
+            >
+            <nb-datepicker #dateTimePicker format="yyyy-MM-dd" [min]="getConfigField(f, 'minValue')"
+                           [max]="getConfigField(f, 'maxValue')"></nb-datepicker>
+          </ng-template>
+          <ng-template [ngIf]="f.type=='timepicker'">
+            <label [for]="getElementId(f)">
+              {{ f.label }}
+              <span class="error-msg"><i class="fa fa-times-circle"></i> {{ getErrors(f) }} </span>
+            </label>
+
+            <input [id]="getElementId(f)" nbInput [placeholder]="f.placeHolder" [nbTimepicker]="timepicker"
+                   class="form-control" [formControlName]="f.formControl"
+                   [step]="getConfigField(f, 'step')">
+            <nb-timepicker #timepicker></nb-timepicker>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+    <div class="row" *ngIf="searchControls.length>0">
+      <div class="col-md-12">
+        <button class="btn btn-outline-dark margin-r-5" type="submit" title="Tìm kiếm" [disabled]="searchForm.invalid">
+          Tìm kiếm
+        </button>
+        <button class="btn btn-outline-dark" type="button" (click)="removeFilter()" title="Xóa lọc">
+          Xóa lọc
+        </button>
+      </div>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,15 @@
+<nb-card [status]="modalType" [size]="modalSize">
+  <nb-card-header>
+    <span>{{title}}</span>
+    <button type="button" class="close float-right" aria-label="Close" (click)="dismissAction()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </nb-card-header>
+  <nb-card-body [nbSpinner]="isLoading" nbSpinnerStatus="danger">
+    <ng-content select="div[role=content]"></ng-content>
+  </nb-card-body>
+  <nb-card-footer>
+    <ng-content select="button.list-btn-actions"></ng-content>
+    <button type="button" class="btn btn-outline-dark" (click)="dismissAction()">Đóng</button>
+  </nb-card-footer>
+</nb-card>

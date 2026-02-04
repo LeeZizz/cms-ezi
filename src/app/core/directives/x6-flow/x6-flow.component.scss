@@ -1,0 +1,25 @@
+.flowchart-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+
+  .content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+
+    .stencil-container {
+      width: 300px;
+      border-right: 1px solid #d9d9d9;
+      overflow-y: auto;
+      background-color: #fafafa;
+    }
+
+    .graph-container {
+      flex: 1;
+      background-color: #fff;
+      overflow: hidden;
+    }
+  }
+}

@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap');
+
+// themes - our custom or/and out of the box themes
+@import 'themes';
+
+// framework component themes (styles tied to theme variables)
+@import '@nebular/theme/styles/globals';
+@import '@nebular/auth/styles/globals';
+
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/grid';
+
+// loading progress bar theme
+@import './pace.theme';
+
+@import './layout';
+@import './overrides';
+
+// install the framework and custom global styles
+@include nb-install() {
+
+  // framework global styles
+  @include nb-theme-global();
+  @include nb-auth-global();
+
+  @include ngx-layout();
+  // loading progress bar
+  @include ngx-pace-theme();
+
+  @include nb-overrides();
+}
+
+@mixin mp($pixels) {
+  .margin-r-#{$pixels} {
+    margin-right: #{$pixels}px;
+  }
+  .margin-l-#{$pixels} {
+    margin-left: #{$pixels}px;
+  }
+  .margin-t-#{$pixels} {
+    margin-top: #{$pixels}px;
+  }
+  .margin-b-#{$pixels} {
+    margin-bottom: #{$pixels}px;
+  }
+  .margin-#{$pixels} {
+    margin: #{$pixels}px;
+  }
+  .padding-r-#{$pixels} {
+    padding-right: #{$pixels}px;
+  }
+  .padding-l-#{$pixels} {
+    padding-left: #{$pixels}px;
+  }
+  .padding-t-#{$pixels} {
+    padding-top: #{$pixels}px;
+  }
+  .padding-b-#{$pixels} {
+    padding-bottom: #{$pixels}px;
+  }
+  .padding-#{$pixels} {
+    padding: #{$pixels}px;
+  }
+}
+
+@for $i from 1 through 5 {
+  @include mp($i*5);
+}
+
+@mixin mm-width($pixels) {
+  .min-wd-#{$pixels} {
+    min-width: #{$pixels}px !important;
+  }
+  .max-wd-#{$pixels} {
+    max-width: #{$pixels}px !important;
+  }
+  .wd-#{$pixels} {
+    width: #{$pixels}px !important;
+  }
+}
+
+@for $i from 1 through 5 {
+  @include mm-width($i*50);
+}
+
+nb-card-header {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+nb-dialog-container nb-card nb-card-footer {
+  text-align: right;
+}
+
+.modal-small nb-dialog-container {
+  width: 80vw;
+}
+
+.modal-large nb-dialog-container {
+  width: 90vw;
+}
+
+.modal-huge nb-dialog-container, .modal-huge-full nb-dialog-container {
+  width: 98vw;
+}
+
+div.cdk-overlay-pane[class*="modal-"] nb-dialog-container {
+  max-height: 90vh;
+}
+
+div.cdk-overlay-pane[class*="modal-"] nb-dialog-container nb-card {
+  height: 100%;
+}
+
+table.table thead tr th {
+  text-align: center;
+}
+
+table.table tbody tr td.col-serial {
+  min-width: 70px;
+  text-align: right;
+}
+
+table.table tbody tr td.col-actions {
+  min-width: 150px;
+  text-align: center;
+
+  button.btn {
+    margin-right: 5px;
+  }
+}
+
+.form-group .error-msg {
+  display: none;
+}
+
+.form-group.has-error label .error-msg {
+  color: red !important;
+  display: inline !important;
+  margin-left: 10px;
+}
+
+table.table tbody tr td button + button {
+  margin-left: 5px;
+}
+
+.checkbox .input-checkbox{
+  display: block;
+}
+
+/**** CSS for PC *****/
+@media (min-width: 992px) {
+  .modal-small nb-dialog-container {
+    width: 30vw;
+  }
+
+  .modal-large nb-dialog-container {
+    width: 60vw;
+  }
+
+  .modal-huge nb-dialog-container {
+    width: 90vw;
+  }
+
+  .modal-huge-full nb-dialog-container {
+    width: 98vw;
+  }
+}

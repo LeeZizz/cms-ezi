@@ -1,0 +1,25 @@
+<div class="card">
+  <div class="card-heading padding-t-20 padding-b-20">
+    <div class="row">
+      <div class="col-md-12">
+        <d-search-form [searchControls]="fields" [searchForm]="formGroup" (action)="loadAction()"></d-search-form>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <ng-content select="button.list-btn-actions"></ng-content>
+        <button type="button" title="Tạo mới" class="btn btn-primary float-right margin-10"
+                (click)="createAction()" *ngIf="createBtnEnabled">
+          <i class="fa fa-plus"></i> Thêm mới
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="table-responsive" [nbSpinner]="isLoading" nbSpinnerStatus="danger">
+    <ng-content select="table,div[role=content]"></ng-content>
+  </div>
+  <div class="card-footer">
+    <d-crud-paginator [pagination]="pagination" (load)="loadAction()"></d-crud-paginator>
+  </div>
+</div>
+

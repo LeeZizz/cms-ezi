@@ -1,0 +1,6 @@
+<button type="button" class="btn btn-danger btn-sm" mwlConfirmationPopover [popoverTitle]="confirmTitle"
+        popoverMessage="Bạn thực sự muốn xóa?" [title]="title"
+        placement="top" confirmText="Yes <i class='fa fa-check'></i>"
+        cancelText="No <i class='fa fa-times'></i>" (confirm)="this.confirm.emit()">
+  <ng-content select="i"></ng-content>
+</button>

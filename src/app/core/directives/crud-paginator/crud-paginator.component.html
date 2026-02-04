@@ -1,0 +1,18 @@
+<div class="row">
+  <div class="col-md-6">
+    <pagination [totalItems]="pagination.totalItems" [(ngModel)]="pagination.currentPage"
+                [maxSize]="pagination.maxSize" [itemsPerPage]="pagination.itemsPerPage"
+                (pageChanged)="pageChanged($event)" [boundaryLinks]="true" class="pagination-sm"
+                (numPages)="pagination.numPages = $event"></pagination>
+  </div>
+  <div class="col-md-6">
+    <div class="box-go-to row">
+      <input type="number" class="col-2" [(ngModel)]="nextPage">
+      <span class="col-1">/</span>
+      <input type="text" class="col-2" [(ngModel)]="pagination.numPages" disabled>
+      <div class="col-4">
+        <button class="btn btn-outline-dark" (click)="goToPage()">Đến</button>
+      </div>
+    </div>
+  </div>
+</div>

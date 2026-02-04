@@ -1,0 +1,33 @@
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">{{ title }}</h3>
+    <div class="card-tools float-right">
+      <button type="button" class="btn btn-box-tool" title="Thêm mới" (click)="create()" *ngIf="enableCRUD"><i
+        class="fa fa-plus"></i>
+      </button>
+    </div>
+  </div>
+  <div class="card-body no-padding">
+    <ul class="nav flex-column nav-pills nav-stacked">
+      <li *ngFor="let c of list;let i=index" class="nav-item padding-10" [ngClass]="{'active':itemSelected?.id==c.id}">
+        <a href="javascript:void(0)" (click)="handleItemSelected(c)">
+          <i class="fa" style="margin-right: 10px"
+             [ngClass]="{'fa-circle-o':itemSelected?.id!=c.id,'fa-check-circle-o':itemSelected?.id==c.id}"></i>
+          <span>{{ c[attrName] }}</span>
+          <button class="btn btn-outline-danger btn-sm float-right" type="button" mwlConfirmationPopover
+                  popoverTitle="Xóa"
+                  popoverMessage="Bạn thực sự muốn xóa?"
+                  placement="top" confirmText="Yes <i class='fa fa-check'></i>"
+                  cancelText="No <i class='fa fa-times'></i>" (confirm)="remove(c,i)" *ngIf="enableCRUD">
+            <i class="fa fa-times"></i>
+          </button>
+          <button type="button" class="btn btn-outline-dark btn-sm float-right margin-r-5" (click)="edit(c,i)"
+                  *ngIf="enableCRUD"><i
+            class="fa fa-edit"></i>
+          </button>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <!-- /.box-body -->
+</div>

@@ -1,0 +1,21 @@
+<nb-card size="tiny" status="basic">
+  <nb-card-header>
+    <span>{{title}}</span>
+    <button type="button" class="close float-right" aria-label="Close" (click)="dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </nb-card-header>
+  <nb-card-body>
+    <div class="row">
+      <div class="col-12">
+        <d-crud-form [formGroup]="formGroup" [fields]="fields"></d-crud-form>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer>
+    <button type="submit" class="btn btn-outline-primary margin-r-5" (click)="confirm()">{{textBtn[0]}}
+    </button>
+    <button type="button" class="btn btn-outline-dark" (click)="dismiss()">{{textBtn[1]}}</button>
+  </nb-card-footer>
+</nb-card>
+
