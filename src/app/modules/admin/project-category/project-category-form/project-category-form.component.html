@@ -1,0 +1,133 @@
+<div class="row">
+    <!-- Cấu hình Category -->
+    <div class="col-md-7">
+        <nb-card>
+            <nb-card-header>{{ isEdit ? 'Sửa' : 'Tạo mới' }} danh mục dự án ({{ typeLabel }})</nb-card-header>
+            <nb-card-body>
+                <form [formGroup]="categoryForm">
+                    <div class="form-group">
+                        <label class="label">Tên Category</label>
+                        <input nbInput fullWidth placeholder="Căn hộ, Nhà phố..." formControlName="name">
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Mô tả</label>
+                        <textarea nbInput fullWidth placeholder="Mô tả ngắn về loại dự án này"
+                            formControlName="description"></textarea>
+                    </div>
+
+                    <hr>
+                    <div class="header-container mt-3 mb-2">
+                        <label class="label">Định nghĩa các trường dữ liệu (Dynamic Fields)</label>
+                        <button nbButton size="tiny" status="success" (click)="addField()">
+                            <nb-icon icon="plus-outline"></nb-icon> Thêm trường
+                        </button>
+                    </div>
+
+                    <div formArrayName="schema">
+                        <div *ngFor="let field of schemaFormArray.controls; let i=index" [formGroupName]="i"
+                            class="field-row mb-2">
+                            <div class="row align-items-end">
+                                <div class="col-md-4">
+                                    <label class="label-small">Tên Field</label>
+                                    <input nbInput fullWidth size="small" placeholder="Ví dụ: Lộ giới"
+                                        formControlName="label">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="label-small">Kiểu dữ liệu</label>
+                                    <nb-select fullWidth size="small" formControlName="type">
+                                        <nb-option *ngFor="let type of fieldTypes" [value]="type.value">{{ type.label
+                                            }}</nb-option>
+                                    </nb-select>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <label class="label-small d-block">Bắt buộc</label>
+                                    <nb-toggle size="tiny" formControlName="required"></nb-toggle>
+                                </div>
+                                <div class="col-md-2" *ngIf="field.get('type').value === 'select'">
+                                    <label class="label-small">Options (cách bởi dấu phẩy)</label>
+                                    <input nbInput fullWidth size="small" placeholder="A, B, C"
+                                        formControlName="options">
+                                </div>
+                                <div class="col-md-1">
+                                    <button nbButton ghost status="danger" size="small" (click)="removeField(i)">
+                                        <nb-icon icon="close-outline"></nb-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="schemaFormArray.length === 0" class="text-center p-3 text-hint">
+                            Chưa có trường dữ liệu nào. Nhấn "Thêm trường" để bắt đầu.
+                        </div>
+                    </div>
+                </form>
+            </nb-card-body>
+            <nb-card-footer>
+                <button nbButton status="primary" (click)="save()">Lưu Category</button>
+                <button nbButton ghost class="ml-2" [routerLink]="['/admin/project-category', type]">Hủy</button>
+            </nb-card-footer>
+        </nb-card>
+    </div>
+
+    <!-- Preview Giao diện -->
+    <div class="col-md-5">
+        <nb-card status="info">
+            <nb-card-header>Xem trước (Preview) Form Dự án</nb-card-header>
+            <nb-card-body>
+                <div class="preview-container">
+                    <h6>Thông tin chung (Mặc định)</h6>
+                    <div class="form-group"><label class="label">Tên dự án</label><input nbInput fullWidth disabled
+                            placeholder="Auto-generated"></div>
+
+                    <h6 class="mt-3">Thông tin đặc thù ({{ categoryForm.get('name').value || 'Mới' }})</h6>
+                    <div *ngFor="let field of schemaFormArray.value" class="form-group">
+                        <label class="label">{{ field.label || '(Chưa đặt tên)' }} <span *ngIf="field.required"
+                                class="text-danger">*</span></label>
+
+                        <input *ngIf="field.type === 'text'" nbInput fullWidth placeholder="Nhập văn bản...">
+                        <input *ngIf="field.type === 'number'" type="number" nbInput fullWidth placeholder="Nhập số...">
+                        <input *ngIf="field.type === 'date'" type="date" nbInput fullWidth>
+                        <nb-select *ngIf="field.type === 'select'" fullWidth placeholder="Chọn giá trị">
+                            <nb-option *ngFor="let op of (field.options?.split(',') || [])" [value]="op">{{ op
+                                }}</nb-option>
+                        </nb-select>
+                    </div>
+                    <div *ngIf="schemaFormArray.length === 0" class="text-center p-4 border-dashed">
+                        Các trường bạn định nghĩa sẽ hiện ở đây
+                    </div>
+                </div>
+            </nb-card-body>
+        </nb-card>
+    </div>
+</div>
+
+<style>
+    .label-small {
+        font-size: 0.75rem;
+        color: #8f9bb3;
+        margin-bottom: 0.25rem;
+        font-weight: bold;
+    }
+
+    .field-row {
+        padding: 10px;
+        border: 1px solid #edf1f7;
+        border-radius: 4px;
+        background: #f7f9fc;
+    }
+
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .border-dashed {
+        border: 2px dashed #edf1f7;
+        color: #8f9bb3;
+        border-radius: 4px;
+    }
+
+    .ml-2 {
+        margin-left: 0.5rem;
+    }
+</style>

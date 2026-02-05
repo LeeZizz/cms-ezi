@@ -36,30 +36,39 @@
   .margin-r-#{$pixels} {
     margin-right: #{$pixels}px;
   }
+
   .margin-l-#{$pixels} {
     margin-left: #{$pixels}px;
   }
+
   .margin-t-#{$pixels} {
     margin-top: #{$pixels}px;
   }
+
   .margin-b-#{$pixels} {
     margin-bottom: #{$pixels}px;
   }
+
   .margin-#{$pixels} {
     margin: #{$pixels}px;
   }
+
   .padding-r-#{$pixels} {
     padding-right: #{$pixels}px;
   }
+
   .padding-l-#{$pixels} {
     padding-left: #{$pixels}px;
   }
+
   .padding-t-#{$pixels} {
     padding-top: #{$pixels}px;
   }
+
   .padding-b-#{$pixels} {
     padding-bottom: #{$pixels}px;
   }
+
   .padding-#{$pixels} {
     padding: #{$pixels}px;
   }
@@ -73,9 +82,11 @@
   .min-wd-#{$pixels} {
     min-width: #{$pixels}px !important;
   }
+
   .max-wd-#{$pixels} {
     max-width: #{$pixels}px !important;
   }
+
   .wd-#{$pixels} {
     width: #{$pixels}px !important;
   }
@@ -104,7 +115,8 @@ nb-dialog-container nb-card nb-card-footer {
   width: 90vw;
 }
 
-.modal-huge nb-dialog-container, .modal-huge-full nb-dialog-container {
+.modal-huge nb-dialog-container,
+.modal-huge-full nb-dialog-container {
   width: 98vw;
 }
 
@@ -144,11 +156,11 @@ table.table tbody tr td.col-actions {
   margin-left: 10px;
 }
 
-table.table tbody tr td button + button {
+table.table tbody tr td button+button {
   margin-left: 5px;
 }
 
-.checkbox .input-checkbox{
+.checkbox .input-checkbox {
   display: block;
 }
 

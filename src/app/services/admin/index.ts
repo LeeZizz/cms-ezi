@@ -12,3 +12,4 @@ export * from './punishment.service';
 export * from './role.service';
 export * from './user.service';
 export * from './work-log.service';
+export * from './project-category.service';
