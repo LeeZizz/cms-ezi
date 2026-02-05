@@ -1,10 +1,19 @@
 import { CrudModel } from '../../core/crud/crud-model';
 
+// Interface cho từng option trong trường Select
+export interface SelectOption {
+    value: string;
+    label: string;
+    description?: string; // Mô tả chi tiết cho option
+}
+
 export interface DynamicField {
     label: string;
-    type: 'text' | 'number' | 'date' | 'select';
+    type: 'text' | 'number' | 'date' | 'select' | 'html'; // Thêm kiểu 'html' cho siêu văn bản
     required: boolean;
-    options?: string[]; // Dùng cho kiểu select
+    description?: string; // Mô tả cho trường (hiển thị dưới label)
+    placeholder?: string; // Placeholder text
+    options?: SelectOption[]; // Dùng cho kiểu select - giờ là object thay vì string
 }
 
 export class ProjectCategory extends CrudModel {
