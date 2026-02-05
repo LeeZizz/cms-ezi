@@ -1,0 +1,55 @@
+<nb-card>
+    <nb-card-header>
+        <div class="header-container">
+            <span>Quản lý danh mục dự án ({{ typeLabel }})</span>
+            <button nbButton status="primary" size="small" [routerLink]="['/admin/project-category', type, 'create']">
+                <nb-icon icon="plus-outline"></nb-icon> Tạo mới
+            </button>
+        </div>
+    </nb-card-header>
+
+    <nb-card-body>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên danh mục</th>
+                    <th>Mô tả</th>
+                    <th>Số lượng trường</th>
+                    <th>Số lượng dự án</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of categories">
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.schema?.length || 0 }}</td>
+                    <td><nb-badge status="info" [text]="item.projectCount || 0"></nb-badge></td>
+                    <td>
+                        <button nbButton ghost status="info"
+                            [routerLink]="['/admin/project-category', type, 'edit', item.id]">
+                            <nb-icon icon="edit-outline"></nb-icon>
+                        </button>
+                        <button nbButton ghost status="danger" (click)="deleteCategory(item.id)">
+                            <nb-icon icon="trash-2-outline"></nb-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </nb-card-body>
+</nb-card>
+
+<style>
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table {
+        width: 100%;
+    }
+</style>

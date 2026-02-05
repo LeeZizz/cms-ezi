@@ -1,10 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { TitleService } from '@app/core';
 import { AuthService } from '@app/services';
 import { ADMIN_MENU_ITEMS } from "../../modules";
-import { MANAGER_MENU_ITEMS } from "../../modules/manager";
-import { MEMBER_MENU_ITEMS } from "../../modules/member";
 import { NbMenuItem } from "@nebular/theme";
+import { ProjectCategoryService } from "../../services/admin/project-category.service";
+import { ProjectCategory } from '../../models/admin/project-category';
+import { pathJoin } from '../../core/utils';
+import { map } from 'rxjs/operators';
 
 
 @Component({
@@ -18,28 +21,27 @@ export class HomeComponent implements OnInit, OnDestroy {
   sub: any;
   menu: NbMenuItem[];
 
-  constructor(private titleService: TitleService, private authService: AuthService) {
+  constructor(
+    private titleService: TitleService,
+    private authService: AuthService,
+    private categoryService: ProjectCategoryService,
+    private http: HttpClient
+  ) {
     this.title = 'CMS Ezi - Dashboard';
   }
 
   ngOnInit() {
     this.sub = this.titleService.titleSubject$.subscribe((newTitle: string) => setTimeout(() => this.title = newTitle));
-    this.menu = [];
-    this.menu.push(...ADMIN_MENU_ITEMS);
-    this.menu.push(...MANAGER_MENU_ITEMS);
-    this.menu.push(...MEMBER_MENU_ITEMS);
+    this.loadMenu();
+  }
 
-    /*
-    this.authService.getRoles().forEach(role => {
-      if (role === 'admin') {
-        this.menu.push(...ADMIN_MENU_ITEMS);
-      } else if (role === 'manager') {
-        this.menu.push(...MANAGER_MENU_ITEMS);
-      } else if (role === 'member') {
-        this.menu.push(...MEMBER_MENU_ITEMS);
-      }
-    });
-    */
+  loadMenu() {
+    // Sử dụng menu tĩnh từ ADMIN_MENU_ITEMS
+    this.menu = JSON.parse(JSON.stringify(ADMIN_MENU_ITEMS));
+
+    // Vẫn gọi API để kiểm tra kết nối nhưng không còn gán vào menu con để tránh "dạng bay"
+    const apiURL = pathJoin(['admin', 'project-categories']);
+    this.http.get(apiURL).subscribe(() => { }, () => { });
   }
 
   ngOnDestroy() {
