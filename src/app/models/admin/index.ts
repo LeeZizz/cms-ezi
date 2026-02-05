@@ -11,3 +11,6 @@ export * from './punishment.meta';
 export * from './role.meta';
 export * from './user.meta';
 export * from './work-log.meta';
+export * from './project-category';
+export * from './project';
+
