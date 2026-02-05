@@ -9,11 +9,13 @@ export interface SelectOption {
 
 export interface DynamicField {
     label: string;
-    type: 'text' | 'number' | 'date' | 'select' | 'html'; // Thêm kiểu 'html' cho siêu văn bản
+    type: 'text' | 'number' | 'date' | 'select' | 'html' | 'images' | 'video'; // Thêm 'images' và 'video' cho media
     required: boolean;
     description?: string; // Mô tả cho trường (hiển thị dưới label)
     placeholder?: string; // Placeholder text
-    options?: SelectOption[]; // Dùng cho kiểu select - giờ là object thay vì string
+    options?: SelectOption[]; // Dùng cho kiểu select
+    maxFiles?: number; // Giới hạn số file upload (cho images/video)
+    acceptUrl?: boolean; // Cho phép nhập URL thay vì upload (mặc định true)
 }
 
 export class ProjectCategory extends CrudModel {
