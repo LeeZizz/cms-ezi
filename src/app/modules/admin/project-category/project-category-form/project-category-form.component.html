@@ -121,6 +121,33 @@
                         <textarea *ngIf="field.type === 'html'" nbInput fullWidth rows="4"
                             [placeholder]="field.placeholder || 'Nhập nội dung HTML...'"></textarea>
                         <small *ngIf="field.type === 'html'" class="text-hint">Trường này hỗ trợ định dạng HTML</small>
+
+                        <!-- Images Upload Preview -->
+                        <div *ngIf="field.type === 'images'" class="media-upload-zone">
+                            <div class="upload-box">
+                                <nb-icon icon="image-outline" class="upload-icon"></nb-icon>
+                                <span>Kéo thả ảnh hoặc click để upload</span>
+                                <small class="text-muted d-block">Hỗ trợ: JPG, PNG, GIF</small>
+                            </div>
+                            <div class="url-input mt-2">
+                                <input nbInput fullWidth size="small" placeholder="Hoặc nhập URL ảnh...">
+                                <button nbButton size="small" status="primary" class="mt-1">Thêm URL</button>
+                            </div>
+                        </div>
+
+                        <!-- Video Upload Preview -->
+                        <div *ngIf="field.type === 'video'" class="media-upload-zone">
+                            <div class="upload-box video">
+                                <nb-icon icon="video-outline" class="upload-icon"></nb-icon>
+                                <span>Kéo thả video hoặc click để upload</span>
+                                <small class="text-muted d-block">Hỗ trợ: MP4, WebM, YouTube URL</small>
+                            </div>
+                            <div class="url-input mt-2">
+                                <input nbInput fullWidth size="small"
+                                    placeholder="Hoặc nhập URL video (YouTube, Vimeo...)">
+                                <button nbButton size="small" status="primary" class="mt-1">Thêm URL</button>
+                            </div>
+                        </div>
                     </div>
                     <div *ngIf="schemaFormArray.length === 0" class="text-center p-4 border-dashed">
                         Các trường bạn định nghĩa sẽ hiện ở đây
@@ -160,5 +187,54 @@
 
     .ml-2 {
         margin-left: 0.5rem;
+    }
+
+    /* Media Upload Zone Styles */
+    .media-upload-zone {
+        border: 1px solid #edf1f7;
+        border-radius: 4px;
+        padding: 10px;
+        background: #f7f9fc;
+    }
+
+    .upload-box {
+        border: 2px dashed #3366ff;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        background: #f0f4ff;
+        transition: all 0.2s ease;
+    }
+
+    .upload-box:hover {
+        background: #e6edff;
+        border-color: #274bdb;
+    }
+
+    .upload-box.video {
+        border-color: #ff3d71;
+        background: #fff0f4;
+    }
+
+    .upload-box.video:hover {
+        background: #ffe0e9;
+        border-color: #db2c66;
+    }
+
+    .upload-icon {
+        font-size: 2rem;
+        display: block;
+        margin-bottom: 8px;
+        color: #3366ff;
+    }
+
+    .upload-box.video .upload-icon {
+        color: #ff3d71;
+    }
+
+    .url-input {
+        padding-top: 10px;
+        border-top: 1px dashed #edf1f7;
     }
 </style>

@@ -22,6 +22,8 @@ export class ProjectCategoryFormComponent implements OnInit {
         { value: 'date', label: 'Ngày tháng (Date)' },
         { value: 'select', label: 'Lựa chọn (Select)' },
         { value: 'html', label: 'Siêu văn bản (HTML)' },
+        { value: 'images', label: 'Nhiều ảnh (Images)' },
+        { value: 'video', label: 'Video' },
     ];
 
     constructor(
