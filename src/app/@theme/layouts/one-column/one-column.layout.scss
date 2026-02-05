@@ -4,6 +4,17 @@
 
 @include nb-install-component() {
   .menu-sidebar ::ng-deep .scrollable {
-    padding-top: nb-theme(layout-padding-top);
+    padding-top: 0 !important;
+  }
+
+  // Xóa vệt kẻ ngang phía dưới header
+  ::ng-deep nb-layout-header {
+    box-shadow: none !important;
+
+    nav,
+    nav.fixed {
+      box-shadow: none !important;
+      border-bottom: none !important;
+    }
   }
 }

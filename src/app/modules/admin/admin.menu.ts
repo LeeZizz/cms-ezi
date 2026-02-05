@@ -18,6 +18,22 @@ export const ADMIN_MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
+  {
+    title: 'Quản lý dự án',
+    icon: 'briefcase-outline',
+    children: [
+      {
+        title: 'Dự án cho thuê',
+        icon: 'home-outline',
+        link: '/admin/project/rent',
+      },
+      {
+        title: 'Dự án bán',
+        icon: 'shopping-cart-outline',
+        link: '/admin/project/sale',
+      },
+    ],
+  },
 ];
 
 
