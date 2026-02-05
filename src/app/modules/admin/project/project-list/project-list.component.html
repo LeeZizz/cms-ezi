@@ -2,9 +2,13 @@
     <nb-card-header>
         <div class="header-container">
             <span>Quản lý dự án ({{ typeLabel }})</span>
-            <button nbButton status="primary" size="small" [routerLink]="['/admin/project', type, 'create']">
-                <nb-icon icon="plus-outline"></nb-icon> Tạo mới
-            </button>
+            <div class="filter-container">
+                <nb-select placeholder="Lọc theo danh mục" size="small" [(ngModel)]="selectedCategoryId"
+                    (selectedChange)="onCategoryFilterChange()">
+                    <nb-option [value]="null">Tất cả danh mục</nb-option>
+                    <nb-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</nb-option>
+                </nb-select>
+            </div>
         </div>
     </nb-card-header>
     <nb-card-body>
@@ -19,25 +23,37 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let item of projects">
+                <tr *ngFor="let item of filteredProjects">
                     <td>{{ item.id }}</td>
                     <td>{{ item.name }}</td>
                     <td>{{ item.categoryName }}</td>
                     <td>
-                        <nb-badge [status]="getStatusBadge(item.status)"
-                            [text]="getStatusLabel(item.status)"></nb-badge>
+                        <span class="status-badge" [ngClass]="'status-' + item.projectStatus">
+                            {{ getStatusLabel(item.projectStatus) }}
+                        </span>
                     </td>
-                    <td>
-                        <button nbButton ghost status="info" [routerLink]="['/admin/project', type, 'edit', item.id]">
+                    <td class="action-cell">
+                        <button nbButton ghost status="info" [routerLink]="['/admin/project', type, 'edit', item.id]"
+                            title="Chỉnh sửa">
                             <nb-icon icon="edit-outline"></nb-icon>
                         </button>
-                        <button nbButton ghost status="danger" (click)="deleteProject(item.id)">
+                        <button nbButton ghost status="danger" (click)="deleteProject(item.id)" title="Xóa">
                             <nb-icon icon="trash-2-outline"></nb-icon>
                         </button>
+                        <div class="status-dropdown">
+                            <button nbButton ghost status="warning" [nbContextMenu]="statusMenuItems"
+                                [nbContextMenuTag]="'status-menu-' + item.id" title="Đổi trạng thái"
+                                nbContextMenuPlacement="right" (nbContextMenuItemClick)="onStatusChange($event, item)">
+                                <nb-icon icon="swap-outline"></nb-icon>
+                            </button>
+                        </div>
                     </td>
                 </tr>
-                <tr *ngIf="projects.length === 0">
-                    <td colspan="5" class="text-center">Chưa có dự án nào</td>
+                <tr *ngIf="filteredProjects.length === 0">
+                    <td colspan="5" class="text-center">
+                        <span *ngIf="selectedCategoryId">Không có dự án nào trong danh mục này</span>
+                        <span *ngIf="!selectedCategoryId">Chưa có dự án nào</span>
+                    </td>
                 </tr>
             </tbody>
         </table>

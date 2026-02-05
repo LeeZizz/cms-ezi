@@ -12,6 +12,7 @@ import {
     NbRadioModule,
     NbCheckboxModule,
     NbDatepickerModule,
+    NbContextMenuModule,
 } from '@nebular/theme';
 
 import { ProjectListComponent } from './project-list/project-list.component';
@@ -42,6 +43,7 @@ const routes: Routes = [
         NbRadioModule,
         NbCheckboxModule,
         NbDatepickerModule,
+        NbContextMenuModule,
     ],
 })
 export class ProjectModule { }
