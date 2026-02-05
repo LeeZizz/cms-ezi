@@ -182,3 +182,63 @@ table.table tbody tr td button+button {
     width: 98vw;
   }
 }
+
+// Tối ưu khoảng trắng sidebar - Giữ sát header và xóa vệt kẻ ngang
+nb-sidebar {
+  border-top: none !important;
+  border-right: 1px solid #edf1f7 !important; // Vạch kẻ đứng ngăn cách content
+
+  .main-container,
+  .scrollable {
+    padding-top: 0 !important;
+  }
+
+  nb-menu {
+    margin-top: 0 !important;
+    border-top: none !important;
+
+    ul.menu-items {
+      >li.menu-item {
+        &:first-child {
+          margin-top: 0 !important;
+        }
+      }
+    }
+  }
+}
+
+// Xóa hoàn toàn vạch kẻ và bóng đổ của Header - Cách quyết liệt nhất
+nb-layout-header,
+nb-layout-header *,
+nb-layout-header nav,
+nb-layout-header nav.fixed,
+.layout-container,
+ngx-header,
+ngx-header * {
+  box-shadow: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+
+  &::after,
+  &::before {
+    display: none !important;
+    box-shadow: none !important;
+  }
+}
+
+// Đảm bảo nav.fixed không có border
+nav.fixed {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+// Xóa khoảng trắng trên cùng của nội dung chính
+nb-layout-column {
+  padding-top: 0 !important;
+
+  // Xóa margin/padding của tiêu đề đầu tiên nếu cần
+  >h1:first-child {
+    margin-top: 0 !important;
+    padding-top: 10px !important; // Giữ một khoảng nhỏ cho đẹp nếu là text
+  }
+}
