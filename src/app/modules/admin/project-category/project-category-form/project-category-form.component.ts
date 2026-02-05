@@ -21,6 +21,7 @@ export class ProjectCategoryFormComponent implements OnInit {
         { value: 'number', label: 'Số (Number)' },
         { value: 'date', label: 'Ngày tháng (Date)' },
         { value: 'select', label: 'Lựa chọn (Select)' },
+        { value: 'html', label: 'Siêu văn bản (HTML)' },
     ];
 
     constructor(
@@ -61,6 +62,8 @@ export class ProjectCategoryFormComponent implements OnInit {
             label: ['', Validators.required],
             type: ['text', Validators.required],
             required: [false],
+            description: [''], // Mô tả cho trường
+            placeholder: [''], // Placeholder text
             options: [''], // Cho kiểu select, nhập dạng comma-separated
         });
         this.schemaFormArray.push(fieldGroup);
@@ -83,10 +86,18 @@ export class ProjectCategoryFormComponent implements OnInit {
         const value = this.categoryForm.value;
         value.type = this.type; // Lưu kèm loại (rent/sale)
 
-        // Chuyển đổi options từ string sang array
+        // Chuyển đổi options từ string sang SelectOption[]
+        // Format: "Đông|Hướng đông, Tây|Hướng tây, Nam, Bắc"
         value.schema = value.schema.map(f => ({
             ...f,
-            options: f.options ? f.options.split(',').map(o => o.trim()) : []
+            options: f.options ? f.options.split(',').map(o => {
+                const parts = o.trim().split('|');
+                return {
+                    value: parts[0]?.trim() || '',
+                    label: parts[0]?.trim() || '',
+                    description: parts[1]?.trim() || ''
+                };
+            }) : []
         }));
 
         console.log('Dữ liệu lưu:', value);

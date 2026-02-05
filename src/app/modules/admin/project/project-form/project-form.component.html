@@ -1,0 +1,80 @@
+<nb-card>
+    <nb-card-header>
+        <span>{{ isEdit ? 'Chỉnh sửa' : 'Tạo mới' }} dự án ({{ typeLabel }})</span>
+    </nb-card-header>
+    <nb-card-body>
+        <!-- Step 1: Chọn danh mục -->
+        <div class="form-section">
+            <h6>Bước 1: Chọn danh mục dự án</h6>
+            <div class="form-group">
+                <label class="label">Danh mục <span class="text-danger">*</span></label>
+                <nb-select placeholder="Chọn danh mục..." [(ngModel)]="selectedCategoryId"
+                    (selectedChange)="onCategoryChange()" fullWidth [disabled]="isEdit">
+                    <nb-option *ngFor="let cat of categories" [value]="cat.id">
+                        {{ cat.name }}
+                    </nb-option>
+                </nb-select>
+            </div>
+        </div>
+
+        <!-- Step 2: Form dự án (hiển thị sau khi chọn danh mục) -->
+        <div class="form-section" *ngIf="selectedCategory">
+            <h6>Bước 2: Thông tin dự án</h6>
+
+            <!-- Tên dự án (luôn có) -->
+            <div class="form-group">
+                <label class="label">Tên dự án <span class="text-danger">*</span></label>
+                <input nbInput fullWidth placeholder="Nhập tên dự án..." [(ngModel)]="project.name">
+            </div>
+
+            <!-- Trạng thái -->
+            <div class="form-group">
+                <label class="label">Trạng thái</label>
+                <nb-radio-group [(ngModel)]="project.status">
+                    <nb-radio value="draft">Nháp</nb-radio>
+                    <nb-radio value="published">Đã đăng</nb-radio>
+                </nb-radio-group>
+            </div>
+
+            <hr>
+            <h6>Thông tin chi tiết (theo danh mục: {{ selectedCategory.name }})</h6>
+
+            <!-- Dynamic Fields từ category.schema -->
+            <div class="form-group" *ngFor="let field of selectedCategory.schema">
+                <label class="label">
+                    {{ field.label }}
+                    <span class="text-danger" *ngIf="field.required">*</span>
+                </label>
+
+                <!-- Text Input -->
+                <input *ngIf="field.type === 'text'" nbInput fullWidth
+                    [placeholder]="'Nhập ' + field.label.toLowerCase() + '...'" [(ngModel)]="project.data[field.label]">
+
+                <!-- Number Input -->
+                <input *ngIf="field.type === 'number'" nbInput fullWidth type="number"
+                    [placeholder]="'Nhập ' + field.label.toLowerCase() + '...'" [(ngModel)]="project.data[field.label]">
+
+                <!-- Date Input -->
+                <input *ngIf="field.type === 'date'" nbInput fullWidth [nbDatepicker]="datepicker"
+                    [placeholder]="'Chọn ' + field.label.toLowerCase() + '...'" [(ngModel)]="project.data[field.label]">
+                <nb-datepicker #datepicker *ngIf="field.type === 'date'"></nb-datepicker>
+
+                <!-- Select Input -->
+                <nb-select *ngIf="field.type === 'select'" fullWidth
+                    [placeholder]="'Chọn ' + field.label.toLowerCase() + '...'" [(ngModel)]="project.data[field.label]">
+                    <nb-option *ngFor="let opt of field.options" [value]="opt">
+                        {{ opt }}
+                    </nb-option>
+                </nb-select>
+            </div>
+        </div>
+    </nb-card-body>
+    <nb-card-footer>
+        <button nbButton status="primary" (click)="onSubmit()" [disabled]="!selectedCategory">
+            <nb-icon icon="save-outline"></nb-icon> Lưu
+        </button>
+        <button nbButton status="basic" (click)="cancel()">
+            <nb-icon icon="close-outline"></nb-icon> Hủy
+        </button>
+    </nb-card-footer>
+</nb-card>

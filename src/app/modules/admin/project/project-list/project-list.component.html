@@ -1,0 +1,45 @@
+<nb-card>
+    <nb-card-header>
+        <div class="header-container">
+            <span>Quản lý dự án ({{ typeLabel }})</span>
+            <button nbButton status="primary" size="small" [routerLink]="['/admin/project', type, 'create']">
+                <nb-icon icon="plus-outline"></nb-icon> Tạo mới
+            </button>
+        </div>
+    </nb-card-header>
+    <nb-card-body>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên dự án</th>
+                    <th>Danh mục</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of projects">
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.categoryName }}</td>
+                    <td>
+                        <nb-badge [status]="getStatusBadge(item.status)"
+                            [text]="getStatusLabel(item.status)"></nb-badge>
+                    </td>
+                    <td>
+                        <button nbButton ghost status="info" [routerLink]="['/admin/project', type, 'edit', item.id]">
+                            <nb-icon icon="edit-outline"></nb-icon>
+                        </button>
+                        <button nbButton ghost status="danger" (click)="deleteProject(item.id)">
+                            <nb-icon icon="trash-2-outline"></nb-icon>
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="projects.length === 0">
+                    <td colspan="5" class="text-center">Chưa có dự án nào</td>
+                </tr>
+            </tbody>
+        </table>
+    </nb-card-body>
+</nb-card>

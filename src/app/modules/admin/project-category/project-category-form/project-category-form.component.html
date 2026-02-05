@@ -25,10 +25,11 @@
 
                     <div formArrayName="schema">
                         <div *ngFor="let field of schemaFormArray.controls; let i=index" [formGroupName]="i"
-                            class="field-row mb-2">
-                            <div class="row align-items-end">
+                            class="field-row mb-3">
+                            <!-- Row 1: Label, Type, Required, Delete -->
+                            <div class="row align-items-end mb-2">
                                 <div class="col-md-4">
-                                    <label class="label-small">Tên Field</label>
+                                    <label class="label-small">Tên Field <span class="text-danger">*</span></label>
                                     <input nbInput fullWidth size="small" placeholder="Ví dụ: Lộ giới"
                                         formControlName="label">
                                 </div>
@@ -43,15 +44,34 @@
                                     <label class="label-small d-block">Bắt buộc</label>
                                     <nb-toggle size="tiny" formControlName="required"></nb-toggle>
                                 </div>
-                                <div class="col-md-2" *ngIf="field.get('type').value === 'select'">
-                                    <label class="label-small">Options (cách bởi dấu phẩy)</label>
-                                    <input nbInput fullWidth size="small" placeholder="A, B, C"
-                                        formControlName="options">
+                                <div class="col-md-3">
+                                    <label class="label-small">Placeholder</label>
+                                    <input nbInput fullWidth size="small" placeholder="Nhập gợi ý..."
+                                        formControlName="placeholder">
                                 </div>
-                                <div class="col-md-1">
+                            </div>
+                            <!-- Row 2: Description -->
+                            <div class="row mb-2">
+                                <div class="col-md-11">
+                                    <label class="label-small">Mô tả (hiển thị dưới label)</label>
+                                    <input nbInput fullWidth size="small" placeholder="Mô tả chi tiết cho trường này..."
+                                        formControlName="description">
+                                </div>
+                                <div class="col-md-1 d-flex align-items-end">
                                     <button nbButton ghost status="danger" size="small" (click)="removeField(i)">
                                         <nb-icon icon="close-outline"></nb-icon>
                                     </button>
+                                </div>
+                            </div>
+                            <!-- Row 3: Options (chỉ hiện khi type = select) -->
+                            <div class="row" *ngIf="field.get('type').value === 'select'">
+                                <div class="col-md-12">
+                                    <label class="label-small">Các lựa chọn (cách bởi dấu phẩy, mỗi option có thể có mô
+                                        tả bằng dấu |)</label>
+                                    <input nbInput fullWidth size="small"
+                                        placeholder="Đông|Hướng đông, Tây|Hướng tây, Nam, Bắc"
+                                        formControlName="options">
+                                    <!-- <small class="text-hint">Ví dụ: "Đông|Mô tả 1, Tây|Mô tả 2" hoặc "A, B, C"</small> -->
                                 </div>
                             </div>
                         </div>
@@ -82,14 +102,25 @@
                     <div *ngFor="let field of schemaFormArray.value" class="form-group">
                         <label class="label">{{ field.label || '(Chưa đặt tên)' }} <span *ngIf="field.required"
                                 class="text-danger">*</span></label>
+                        <small *ngIf="field.description" class="d-block text-muted mb-1">{{ field.description }}</small>
 
-                        <input *ngIf="field.type === 'text'" nbInput fullWidth placeholder="Nhập văn bản...">
-                        <input *ngIf="field.type === 'number'" type="number" nbInput fullWidth placeholder="Nhập số...">
+                        <input *ngIf="field.type === 'text'" nbInput fullWidth
+                            [placeholder]="field.placeholder || 'Nhập văn bản...'">
+                        <input *ngIf="field.type === 'number'" type="number" nbInput fullWidth
+                            [placeholder]="field.placeholder || 'Nhập số...'">
                         <input *ngIf="field.type === 'date'" type="date" nbInput fullWidth>
-                        <nb-select *ngIf="field.type === 'select'" fullWidth placeholder="Chọn giá trị">
-                            <nb-option *ngFor="let op of (field.options?.split(',') || [])" [value]="op">{{ op
-                                }}</nb-option>
+                        <nb-select *ngIf="field.type === 'select'" fullWidth
+                            [placeholder]="field.placeholder || 'Chọn giá trị'">
+                            <nb-option *ngFor="let op of (field.options?.split(',') || [])"
+                                [value]="op.split('|')[0]?.trim()">
+                                {{ op.split('|')[0]?.trim() }}
+                                <span *ngIf="op.split('|')[1]" class="text-muted"> - {{ op.split('|')[1]?.trim()
+                                    }}</span>
+                            </nb-option>
                         </nb-select>
+                        <textarea *ngIf="field.type === 'html'" nbInput fullWidth rows="4"
+                            [placeholder]="field.placeholder || 'Nhập nội dung HTML...'"></textarea>
+                        <small *ngIf="field.type === 'html'" class="text-hint">Trường này hỗ trợ định dạng HTML</small>
                     </div>
                     <div *ngIf="schemaFormArray.length === 0" class="text-center p-4 border-dashed">
                         Các trường bạn định nghĩa sẽ hiện ở đây
