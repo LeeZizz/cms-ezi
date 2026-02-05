@@ -32,14 +32,16 @@ export class ProjectFormComponent implements OnInit {
             this.type = params.get('type') as 'rent' | 'sale';
             this.typeLabel = this.type === 'rent' ? 'cho thuê' : 'bán';
 
+            // Load categories trước
+            this.loadCategories();
+
             const id = params.get('id');
             if (id) {
                 this.isEdit = true;
                 this.projectId = parseInt(id, 10);
+                // Load project sau khi đã có categories
                 this.loadProject();
             }
-
-            this.loadCategories();
         });
     }
 

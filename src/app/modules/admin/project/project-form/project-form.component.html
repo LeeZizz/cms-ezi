@@ -1,43 +1,29 @@
 <nb-card>
     <nb-card-header>
-        <span>{{ isEdit ? 'Chỉnh sửa' : 'Tạo mới' }} dự án ({{ typeLabel }})</span>
+        <span>Chỉnh sửa dự án ({{ typeLabel }})</span>
     </nb-card-header>
     <nb-card-body>
-        <!-- Step 1: Chọn danh mục -->
-        <div class="form-section">
-            <h6>Bước 1: Chọn danh mục dự án</h6>
-            <div class="form-group">
-                <label class="label">Danh mục <span class="text-danger">*</span></label>
-                <nb-select placeholder="Chọn danh mục..." [(ngModel)]="selectedCategoryId"
-                    (selectedChange)="onCategoryChange()" fullWidth [disabled]="isEdit">
-                    <nb-option *ngFor="let cat of categories" [value]="cat.id">
-                        {{ cat.name }}
-                    </nb-option>
-                </nb-select>
-            </div>
+        <!-- Loading -->
+        <div *ngIf="!selectedCategory" class="text-center p-4">
+            <span>Đang tải thông tin dự án...</span>
         </div>
 
-        <!-- Step 2: Form dự án (hiển thị sau khi chọn danh mục) -->
-        <div class="form-section" *ngIf="selectedCategory">
-            <h6>Bước 2: Thông tin dự án</h6>
+        <!-- Form dự án -->
+        <div *ngIf="selectedCategory">
+            <!-- Danh mục (chỉ hiển thị, không cho sửa) -->
+            <div class="form-group">
+                <label class="label">Danh mục</label>
+                <input nbInput fullWidth [value]="selectedCategory.name" disabled>
+            </div>
 
-            <!-- Tên dự án (luôn có) -->
+            <!-- Tên dự án -->
             <div class="form-group">
                 <label class="label">Tên dự án <span class="text-danger">*</span></label>
                 <input nbInput fullWidth placeholder="Nhập tên dự án..." [(ngModel)]="project.name">
             </div>
 
-            <!-- Trạng thái -->
-            <div class="form-group">
-                <label class="label">Trạng thái</label>
-                <nb-radio-group [(ngModel)]="project.status">
-                    <nb-radio value="draft">Nháp</nb-radio>
-                    <nb-radio value="published">Đã đăng</nb-radio>
-                </nb-radio-group>
-            </div>
-
             <hr>
-            <h6>Thông tin chi tiết (theo danh mục: {{ selectedCategory.name }})</h6>
+            <h6>Thông tin chi tiết ({{ selectedCategory.name }})</h6>
 
             <!-- Dynamic Fields từ category.schema -->
             <div class="form-group" *ngFor="let field of selectedCategory.schema">
@@ -45,27 +31,63 @@
                     {{ field.label }}
                     <span class="text-danger" *ngIf="field.required">*</span>
                 </label>
+                <small *ngIf="field.description" class="d-block text-muted mb-1">{{ field.description }}</small>
 
                 <!-- Text Input -->
                 <input *ngIf="field.type === 'text'" nbInput fullWidth
-                    [placeholder]="'Nhập ' + field.label.toLowerCase() + '...'" [(ngModel)]="project.data[field.label]">
+                    [placeholder]="field.placeholder || 'Nhập ' + field.label.toLowerCase() + '...'"
+                    [(ngModel)]="project.data[field.label]">
 
                 <!-- Number Input -->
                 <input *ngIf="field.type === 'number'" nbInput fullWidth type="number"
-                    [placeholder]="'Nhập ' + field.label.toLowerCase() + '...'" [(ngModel)]="project.data[field.label]">
+                    [placeholder]="field.placeholder || 'Nhập ' + field.label.toLowerCase() + '...'"
+                    [(ngModel)]="project.data[field.label]">
 
                 <!-- Date Input -->
                 <input *ngIf="field.type === 'date'" nbInput fullWidth [nbDatepicker]="datepicker"
-                    [placeholder]="'Chọn ' + field.label.toLowerCase() + '...'" [(ngModel)]="project.data[field.label]">
+                    [placeholder]="field.placeholder || 'Chọn ' + field.label.toLowerCase() + '...'"
+                    [(ngModel)]="project.data[field.label]">
                 <nb-datepicker #datepicker *ngIf="field.type === 'date'"></nb-datepicker>
 
                 <!-- Select Input -->
                 <nb-select *ngIf="field.type === 'select'" fullWidth
-                    [placeholder]="'Chọn ' + field.label.toLowerCase() + '...'" [(ngModel)]="project.data[field.label]">
-                    <nb-option *ngFor="let opt of field.options" [value]="opt">
-                        {{ opt }}
+                    [placeholder]="field.placeholder || 'Chọn ' + field.label.toLowerCase() + '...'"
+                    [(ngModel)]="project.data[field.label]">
+                    <nb-option *ngFor="let opt of field.options" [value]="opt.value || opt">
+                        {{ opt.label || opt }}
                     </nb-option>
                 </nb-select>
+
+                <!-- HTML/Textarea Input -->
+                <textarea *ngIf="field.type === 'html'" nbInput fullWidth rows="4"
+                    [placeholder]="field.placeholder || 'Nhập nội dung...'"
+                    [(ngModel)]="project.data[field.label]"></textarea>
+
+                <!-- Images Upload (placeholder) -->
+                <div *ngIf="field.type === 'images'" class="media-upload-zone">
+                    <div class="upload-box">
+                        <nb-icon icon="image-outline" class="upload-icon"></nb-icon>
+                        <span>Kéo thả ảnh hoặc click để upload</span>
+                        <small class="text-muted d-block">Hỗ trợ: JPG, PNG, GIF</small>
+                    </div>
+                    <div class="url-input mt-2">
+                        <input nbInput fullWidth size="small" placeholder="Hoặc nhập URL ảnh...">
+                        <button nbButton size="small" status="primary" class="mt-1">Thêm URL</button>
+                    </div>
+                </div>
+
+                <!-- Video Upload (placeholder) -->
+                <div *ngIf="field.type === 'video'" class="media-upload-zone">
+                    <div class="upload-box video">
+                        <nb-icon icon="video-outline" class="upload-icon"></nb-icon>
+                        <span>Kéo thả video hoặc click để upload</span>
+                        <small class="text-muted d-block">Hỗ trợ: MP4, WebM, YouTube URL</small>
+                    </div>
+                    <div class="url-input mt-2">
+                        <input nbInput fullWidth size="small" placeholder="Hoặc nhập URL video...">
+                        <button nbButton size="small" status="primary" class="mt-1">Thêm URL</button>
+                    </div>
+                </div>
             </div>
         </div>
     </nb-card-body>
