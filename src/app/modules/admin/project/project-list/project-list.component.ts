@@ -19,9 +19,25 @@ export class ProjectListComponent implements OnInit {
     projects: Project[] = [];
     filteredProjects: Project[] = [];
 
-    // Filter
+    // Filter & Search
     categories: Category[] = [];
     selectedCategoryId: number | null = null;
+    searchKeyword: string = '';
+
+    // Pagination
+    pageSize: number = 5;
+    currentPage: number = 1;
+    Math = Math; // Reference để dùng trong template
+
+    get totalPages(): number {
+        return Math.ceil(this.filteredProjects.length / this.pageSize);
+    }
+
+    get pagedProjects(): Project[] {
+        const start = (this.currentPage - 1) * this.pageSize;
+        const end = start + this.pageSize;
+        return this.filteredProjects.slice(start, end);
+    }
 
     // Status menu items
     statusMenuItems: NbMenuItem[] = [
@@ -40,6 +56,8 @@ export class ProjectListComponent implements OnInit {
             this.type = params.get('type') as 'rent' | 'sale';
             this.typeLabel = this.type === 'rent' ? 'cho thuê' : 'bán';
             this.selectedCategoryId = null; // Reset filter khi chuyển type
+            this.searchKeyword = '';
+            this.currentPage = 1;
             this.loadCategories();
             this.loadData();
         });
@@ -55,7 +73,7 @@ export class ProjectListComponent implements OnInit {
     }
 
     loadData() {
-        // Mock data cho UI testing
+        // Mock data cho UI testing - 8 dự án để có phân trang
         this.projects = [
             {
                 id: 1,
@@ -89,20 +107,82 @@ export class ProjectListComponent implements OnInit {
                 projectStatus: 'planning',
                 data: { dientich: 500, gia: 80000000 },
             } as any,
+            {
+                id: 5,
+                name: 'Masteri Thảo Điền - Block A',
+                categoryId: 1,
+                categoryName: 'Căn hộ ' + this.typeLabel,
+                projectStatus: 'completed',
+                data: { dientich: 90, gia: 18000000 },
+            } as any,
+            {
+                id: 6,
+                name: 'Nhà phố Thủ Đức - 3 tầng',
+                categoryId: 2,
+                categoryName: 'Nhà phố ' + this.typeLabel,
+                projectStatus: 'handover',
+                data: { dientich: 150, gia: 30000000 },
+            } as any,
+            {
+                id: 7,
+                name: 'Biệt thự Phú Mỹ Hưng',
+                categoryId: 3,
+                categoryName: 'Biệt thự ' + this.typeLabel,
+                projectStatus: 'completed',
+                data: { dientich: 400, gia: 65000000 },
+            } as any,
+            {
+                id: 8,
+                name: 'Saigon Pearl - Tầng 25',
+                categoryId: 1,
+                categoryName: 'Căn hộ ' + this.typeLabel,
+                projectStatus: 'planning',
+                data: { dientich: 85, gia: 20000000 },
+            } as any,
         ];
         this.applyFilter();
     }
 
     applyFilter() {
+        let result = [...this.projects];
+
+        // Lọc theo danh mục
         if (this.selectedCategoryId) {
-            this.filteredProjects = this.projects.filter(p => p.categoryId === this.selectedCategoryId);
-        } else {
-            this.filteredProjects = [...this.projects];
+            result = result.filter(p => p.categoryId === this.selectedCategoryId);
         }
+
+        // Lọc theo từ khóa tìm kiếm
+        if (this.searchKeyword.trim()) {
+            const keyword = this.searchKeyword.toLowerCase().trim();
+            result = result.filter(p =>
+                p.name.toLowerCase().includes(keyword) ||
+                p.categoryName?.toLowerCase().includes(keyword)
+            );
+        }
+
+        this.filteredProjects = result;
     }
 
     onCategoryFilterChange() {
+        this.currentPage = 1;
         this.applyFilter();
+    }
+
+    onSearch() {
+        this.currentPage = 1;
+        this.applyFilter();
+    }
+
+    clearSearch() {
+        this.searchKeyword = '';
+        this.currentPage = 1;
+        this.applyFilter();
+    }
+
+    goToPage(page: number) {
+        if (page >= 1 && page <= this.totalPages) {
+            this.currentPage = page;
+        }
     }
 
     getStatusBadge(status: string): string {

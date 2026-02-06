@@ -2,9 +2,20 @@
     <nb-card-header>
         <div class="header-container">
             <span>Quản lý danh mục dự án ({{ typeLabel }})</span>
-            <button nbButton status="primary" size="small" [routerLink]="['/admin/project-category', type, 'create']">
-                <nb-icon icon="plus-outline"></nb-icon> Tạo mới
-            </button>
+            <div class="header-actions">
+                <div class="search-box">
+                    <nb-icon icon="search-outline" class="search-icon"></nb-icon>
+                    <input nbInput size="small" placeholder="Tìm danh mục..." [(ngModel)]="searchKeyword"
+                        (input)="onSearch()">
+                    <button nbButton ghost size="small" class="clear-btn" *ngIf="searchKeyword" (click)="clearSearch()">
+                        <nb-icon icon="close-outline"></nb-icon>
+                    </button>
+                </div>
+                <button nbButton status="primary" size="small"
+                    [routerLink]="['/admin/project-category', type, 'create']">
+                    <nb-icon icon="plus-outline"></nb-icon> Tạo mới
+                </button>
+            </div>
         </div>
     </nb-card-header>
 
@@ -21,35 +32,54 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let item of categories">
+                <tr *ngFor="let item of pagedCategories">
                     <td>{{ item.id }}</td>
                     <td>{{ item.name }}</td>
                     <td>{{ item.description }}</td>
                     <td>{{ item.schema?.length || 0 }}</td>
                     <td><nb-badge status="info" [text]="item.projectCount || 0"></nb-badge></td>
-                    <td>
+                    <td class="action-cell">
                         <button nbButton ghost status="info"
-                            [routerLink]="['/admin/project-category', type, 'edit', item.id]">
+                            [routerLink]="['/admin/project-category', type, 'edit', item.id]" title="Chỉnh sửa">
                             <nb-icon icon="edit-outline"></nb-icon>
                         </button>
-                        <button nbButton ghost status="danger" (click)="deleteCategory(item.id)">
+                        <button nbButton ghost status="danger" (click)="deleteCategory(item.id)" title="Xóa">
                             <nb-icon icon="trash-2-outline"></nb-icon>
                         </button>
                     </td>
                 </tr>
+                <tr *ngIf="filteredCategories.length === 0">
+                    <td colspan="6" class="text-center">
+                        <span *ngIf="searchKeyword">Không tìm thấy danh mục phù hợp</span>
+                        <span *ngIf="!searchKeyword">Chưa có danh mục nào</span>
+                    </td>
+                </tr>
             </tbody>
         </table>
+
+        <!-- Pagination -->
+        <div class="pagination-container" *ngIf="filteredCategories.length > pageSize">
+            <div class="pagination-info">
+                Hiển thị {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize,
+                filteredCategories.length) }} / {{ filteredCategories.length }} danh mục
+            </div>
+            <div class="pagination-controls">
+                <button nbButton ghost size="small" [disabled]="currentPage === 1" (click)="goToPage(1)">
+                    <nb-icon icon="arrowhead-left-outline"></nb-icon>
+                </button>
+                <button nbButton ghost size="small" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+                    <nb-icon icon="arrow-back-outline"></nb-icon>
+                </button>
+                <span class="page-number">Trang {{ currentPage }} / {{ totalPages }}</span>
+                <button nbButton ghost size="small" [disabled]="currentPage === totalPages"
+                    (click)="goToPage(currentPage + 1)">
+                    <nb-icon icon="arrow-forward-outline"></nb-icon>
+                </button>
+                <button nbButton ghost size="small" [disabled]="currentPage === totalPages"
+                    (click)="goToPage(totalPages)">
+                    <nb-icon icon="arrowhead-right-outline"></nb-icon>
+                </button>
+            </div>
+        </div>
     </nb-card-body>
 </nb-card>
-
-<style>
-    .header-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .table {
-        width: 100%;
-    }
-</style>

@@ -3,6 +3,14 @@
         <div class="header-container">
             <span>Quản lý dự án ({{ typeLabel }})</span>
             <div class="filter-container">
+                <div class="search-box">
+                    <nb-icon icon="search-outline" class="search-icon"></nb-icon>
+                    <input nbInput size="small" placeholder="Tìm dự án..." [(ngModel)]="searchKeyword"
+                        (input)="onSearch()">
+                    <button nbButton ghost size="small" class="clear-btn" *ngIf="searchKeyword" (click)="clearSearch()">
+                        <nb-icon icon="close-outline"></nb-icon>
+                    </button>
+                </div>
                 <nb-select placeholder="Lọc theo danh mục" size="small" [(ngModel)]="selectedCategoryId"
                     (selectedChange)="onCategoryFilterChange()">
                     <nb-option [value]="null">Tất cả danh mục</nb-option>
@@ -23,7 +31,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let item of filteredProjects">
+                <tr *ngFor="let item of pagedProjects">
                     <td>{{ item.id }}</td>
                     <td>{{ item.name }}</td>
                     <td>{{ item.categoryName }}</td>
@@ -51,11 +59,37 @@
                 </tr>
                 <tr *ngIf="filteredProjects.length === 0">
                     <td colspan="5" class="text-center">
-                        <span *ngIf="selectedCategoryId">Không có dự án nào trong danh mục này</span>
-                        <span *ngIf="!selectedCategoryId">Chưa có dự án nào</span>
+                        <span *ngIf="searchKeyword">Không tìm thấy dự án phù hợp</span>
+                        <span *ngIf="!searchKeyword && selectedCategoryId">Không có dự án nào trong danh mục này</span>
+                        <span *ngIf="!searchKeyword && !selectedCategoryId">Chưa có dự án nào</span>
                     </td>
                 </tr>
             </tbody>
         </table>
+
+        <!-- Pagination -->
+        <div class="pagination-container" *ngIf="filteredProjects.length > pageSize">
+            <div class="pagination-info">
+                Hiển thị {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize,
+                filteredProjects.length) }} / {{ filteredProjects.length }} dự án
+            </div>
+            <div class="pagination-controls">
+                <button nbButton ghost size="small" [disabled]="currentPage === 1" (click)="goToPage(1)">
+                    <nb-icon icon="arrowhead-left-outline"></nb-icon>
+                </button>
+                <button nbButton ghost size="small" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+                    <nb-icon icon="arrow-back-outline"></nb-icon>
+                </button>
+                <span class="page-number">Trang {{ currentPage }} / {{ totalPages }}</span>
+                <button nbButton ghost size="small" [disabled]="currentPage === totalPages"
+                    (click)="goToPage(currentPage + 1)">
+                    <nb-icon icon="arrow-forward-outline"></nb-icon>
+                </button>
+                <button nbButton ghost size="small" [disabled]="currentPage === totalPages"
+                    (click)="goToPage(totalPages)">
+                    <nb-icon icon="arrowhead-right-outline"></nb-icon>
+                </button>
+            </div>
+        </div>
     </nb-card-body>
 </nb-card>
