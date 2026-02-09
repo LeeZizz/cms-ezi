@@ -37,7 +37,7 @@
                     <td>{{ item.name }}</td>
                     <td>{{ item.description }}</td>
                     <td>{{ item.schema?.length || 0 }}</td>
-                    <td><nb-badge status="info" [text]="item.projectCount || 0"></nb-badge></td>
+                    <td><span class="project-count-badge">{{ item.projectCount || 0 }}</span></td>
                     <td class="action-cell">
                         <button nbButton ghost status="info"
                             [routerLink]="['/admin/project-category', type, 'edit', item.id]" title="Chỉnh sửa">
