@@ -11,6 +11,16 @@
                         <nb-icon icon="close-outline"></nb-icon>
                     </button>
                 </div>
+                <nb-select placeholder="Lọc theo chủ dự án" size="small" [(ngModel)]="selectedOwner"
+                    (selectedChange)="onOwnerFilterChange()">
+                    <nb-option class="p-0 overflow-hidden search-option" (click)="$event.stopPropagation()">
+                        <input nbInput fullWidth status="basic" placeholder="Tìm kiếm..."
+                            (keyup)="handleOwnerSearch($event)" (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()">
+                    </nb-option>
+                    <nb-option [value]="null">Tất cả chủ dự án</nb-option>
+                    <nb-option *ngFor="let owner of filteredOwners" [value]="owner">{{ owner }}</nb-option>
+                </nb-select>
                 <nb-select placeholder="Lọc theo danh mục" size="small" [(ngModel)]="selectedCategoryId"
                     (selectedChange)="onCategoryFilterChange()">
                     <nb-option [value]="null">Tất cả danh mục</nb-option>
@@ -25,6 +35,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Tên dự án</th>
+                    <th>Chủ dự án</th>
                     <th>Danh mục</th>
                     <th>Trạng thái</th>
                     <th>Thao tác</th>
@@ -34,6 +45,7 @@
                 <tr *ngFor="let item of pagedProjects">
                     <td>{{ item.id }}</td>
                     <td>{{ item.name }}</td>
+                    <td><b>{{ item.ownerName || '-' }}</b></td>
                     <td>{{ item.categoryName }}</td>
                     <td>
                         <span class="status-badge" [ngClass]="'status-' + item.projectStatus">
