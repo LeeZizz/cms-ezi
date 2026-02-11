@@ -1,0 +1,133 @@
+<nb-card>
+    <nb-card-header>
+        <div class="header-container">
+            <span>Quản lý chủ dự án</span>
+            <div class="filter-container">
+                <!-- Search Box -->
+                <div class="search-box">
+                    <nb-icon icon="search-outline" class="search-icon"></nb-icon>
+                    <input nbInput size="small" placeholder="Tìm User..." [(ngModel)]="searchKeyword"
+                        (keyup.enter)="onSearch()">
+                    <button nbButton ghost size="small" class="clear-btn" *ngIf="searchKeyword" (click)="clearSearch()">
+                        <nb-icon icon="close-outline"></nb-icon>
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <nb-select placeholder="Trạng thái" size="small" [(ngModel)]="selectedStatus"
+                    (selectedChange)="onFilterChange()" style="min-width: 150px;">
+                    <nb-option value="all">Tất cả trạng thái</nb-option>
+                    <nb-option value="active">Active</nb-option>
+                    <nb-option value="blocked">Blocked</nb-option>
+                    <nb-option value="sync_error">Lỗi đồng bộ</nb-option>
+                </nb-select>
+
+                <!-- Sync Button -->
+                <button nbButton status="primary" size="small" (click)="syncAll()" [disabled]="isSyncing">
+                    <nb-icon icon="sync-outline" [class.fa-spin]="isSyncing"></nb-icon>
+                    {{ isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ' }}
+                </button>
+            </div>
+        </div>
+    </nb-card-header>
+    <nb-card-body>
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th style="width: 300px;">Chủ dự án</th>
+                        <th>Liên hệ</th>
+                        <th class="text-center">Số lượng dự án</th>
+                        <th class="text-center">Nguồn</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="isLoading">
+                        <td colspan="5" class="text-center p-4">
+                            <nb-spinner status="primary"></nb-spinner>
+                        </td>
+                    </tr>
+                    <tr *ngFor="let user of pagedUsers">
+                        <td>
+                            <nb-user [name]="user.fullName" [picture]="user.avatarUrl" size="medium"
+                                [title]="'@' + user.username">
+                            </nb-user>
+                        </td>
+                        <td>
+                            <div class="small">
+                                <div><nb-icon icon="email-outline" pack="eva" class="mr-1 text-muted"></nb-icon> {{
+                                    user.email }}</div>
+                                <div *ngIf="user.phoneNumber"><nb-icon icon="phone-outline" pack="eva"
+                                        class="mr-1 text-muted"></nb-icon> {{ user.phoneNumber }}</div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center">
+                                <span class="badge badge-info mr-2" nbTooltip="Dự án cho thuê">{{ user.projectCountRent
+                                    }} Thuê</span>
+                                <span class="badge badge-success" nbTooltip="Dự án bán">{{ user.projectCountSale }}
+                                    Bán</span>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <!-- Ezi Source Handling -->
+                            <ng-container *ngIf="isEziSource(user.source); else otherSources">
+                                <div class="ezi-source-badge" nbTooltip="Ezi Solution (Web)">
+                                    <span class="font-weight-bold text-primary">EZI</span>
+                                </div>
+                            </ng-container>
+                            <ng-template #otherSources>
+                                <nb-icon *ngIf="user.source === 'facebook'" icon="facebook" pack="eva" status="primary"
+                                    style="font-size: 1.5rem;"></nb-icon>
+                                <nb-icon *ngIf="user.source === 'google'" icon="google" pack="eva" status="danger"
+                                    style="font-size: 1.5rem;"></nb-icon>
+                                <nb-icon *ngIf="user.source === 'zalo'" icon="message-circle-outline" pack="eva"
+                                    status="info" style="font-size: 1.5rem;"></nb-icon>
+                            </ng-template>
+                        </td>
+                        <td class="action-cell text-center">
+                            <button nbButton ghost status="primary" size="small"
+                                [routerLink]="['/admin/users', user.id]" nbTooltip="Xem chi tiết">
+                                <nb-icon icon="eye-outline"></nb-icon>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="!isLoading && pagedUsers.length === 0">
+                        <td colspan="5" class="text-center text-muted">
+                            <span *ngIf="searchKeyword">Không tìm thấy user phù hợp</span>
+                            <span *ngIf="!searchKeyword">Chưa có user nào</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container" *ngIf="filteredUsers.length > pageSize">
+            <div class="pagination-info">
+                Hiển thị {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize,
+                filteredUsers.length) }} / {{ filteredUsers.length }} kết quả
+            </div>
+
+            <div class="pagination-controls">
+                <button nbButton ghost size="small" [disabled]="currentPage === 1" (click)="goToPage(1)">
+                    <nb-icon icon="arrowhead-left-outline"></nb-icon>
+                </button>
+                <button nbButton ghost size="small" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+                    <nb-icon icon="arrow-back-outline"></nb-icon>
+                </button>
+                <span class="page-number">Trang {{ currentPage }} / {{ totalPages }}</span>
+                <button nbButton ghost size="small" [disabled]="currentPage === totalPages"
+                    (click)="goToPage(currentPage + 1)">
+                    <nb-icon icon="arrow-forward-outline"></nb-icon>
+                </button>
+                <button nbButton ghost size="small" [disabled]="currentPage === totalPages"
+                    (click)="goToPage(totalPages)">
+                    <nb-icon icon="arrowhead-right-outline"></nb-icon>
+                </button>
+            </div>
+        </div>
+    </nb-card-body>
+</nb-card>

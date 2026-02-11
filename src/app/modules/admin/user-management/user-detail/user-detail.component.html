@@ -1,0 +1,197 @@
+<!-- Header Actions -->
+<!-- <div class="mb-4">
+    <h4 class="mb-0">Chi tiết User</h4>
+</div> -->
+
+<div class="row" *ngIf="user">
+    <!-- LEFT SIDEBAR: PROFILE & INFO -->
+    <div class="col-lg-3 left-sidebar">
+        <nb-card class="profile-card mb-4">
+            <div class="profile-header text-center">
+                <div class="avatar-container">
+                    <img [src]="user.avatarUrl || 'assets/images/default-avatar.png'" alt="Avatar">
+                    <div class="source-badge">
+                        <ng-container *ngIf="isEziSource(user.source); else otherSourceIcons">
+                            <div class="ezi-icon">EZI</div>
+                        </ng-container>
+                        <ng-template #otherSourceIcons>
+                            <nb-icon *ngIf="user.source === 'facebook'" icon="facebook" pack="eva"></nb-icon>
+                            <nb-icon *ngIf="user.source === 'google'" icon="google" pack="eva"></nb-icon>
+                            <nb-icon *ngIf="user.source === 'zalo'" icon="message-circle-outline" pack="eva"></nb-icon>
+                        </ng-template>
+                    </div>
+                </div>
+                <h5 class="font-weight-bold mb-1">{{ user.fullName }}</h5>
+                <p class="text-hint small mb-0">@{{ user.username }}</p>
+            </div>
+
+            <ul class="info-list">
+                <li>
+                    <nb-icon icon="email-outline"></nb-icon>
+                    <div class="info-content">
+                        <span class="label">Email</span>
+                        <span class="value">{{ user.email }}</span>
+                    </div>
+                </li>
+                <li>
+                    <nb-icon icon="phone-outline"></nb-icon>
+                    <div class="info-content">
+                        <span class="label">Điện thoại</span>
+                        <span class="value">{{ user.phoneNumber || '---' }}</span>
+                    </div>
+                </li>
+                <li>
+                    <nb-icon icon="clock-outline"></nb-icon>
+                    <div class="info-content">
+                        <span class="label">Đồng bộ lần cuối</span>
+                        <span class="value">{{ user.lastSyncedAt | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                </li>
+            </ul>
+        </nb-card>
+
+        <!-- Admin Notes Section moved to Sidebar for quick access -->
+        <nb-card class="profile-card notes-card">
+            <nb-card-header class="py-3">
+                <h6 class="mb-0 font-weight-bold">Ghi chú</h6>
+            </nb-card-header>
+            <nb-card-body>
+                <textarea nbInput fullWidth placeholder="Nhập ghi chú nội bộ..." [(ngModel)]="editNotes" (blur)="save()"
+                    style="resize: none; height: 100%;"></textarea>
+            </nb-card-body>
+        </nb-card>
+    </div>
+
+    <!-- RIGHT CONTENT: STATS & PROJECTS -->
+    <div class="col-lg-9">
+        <!-- Stats Row -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <nb-icon icon="briefcase-outline"></nb-icon>
+                </div>
+                <div class="stat-details">
+                    <h3>{{ projects.length }}</h3>
+                    <span>Tổng dự án</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <nb-icon icon="checkmark-circle-2-outline"></nb-icon>
+                </div>
+                <div class="stat-details">
+                    <h3>{{ user.projectCountRent + user.projectCountSale }}</h3>
+                    <span>Dự án Active</span>
+                </div>
+            </div>
+            <!-- Placeholder Stat -->
+            <div class="stat-card">
+                <div class="stat-icon info">
+                    <nb-icon icon="star-outline"></nb-icon>
+                </div>
+                <div class="stat-details">
+                    <h3>Pro</h3>
+                    <span>Hạng thành viên</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project List -->
+        <nb-card class="projects-card">
+            <nb-card-header class="d-flex justify-content-between align-items-center">
+                <span>Danh sách dự án</span>
+                <div class="d-flex align-items-center">
+                    <nb-form-field class="mr-2" style="max-width: 250px;">
+                        <nb-icon nbPrefix icon="search-outline" pack="eva"></nb-icon>
+                        <input nbInput size="small" placeholder="Tìm dự án..." [(ngModel)]="searchQuery"
+                            (ngModelChange)="filterProjects()">
+                    </nb-form-field>
+
+                    <nb-select [(selected)]="selectedCategory" (selectedChange)="filterProjects()" size="small"
+                        placeholder="Lọc danh mục" style="min-width: 150px;">
+                        <nb-option value="All">Tất cả danh mục</nb-option>
+                        <nb-option *ngFor="let cat of projectCategories" [value]="cat">{{ cat }}</nb-option>
+                    </nb-select>
+                </div>
+            </nb-card-header>
+            <nb-card-body class="p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-top-0 pl-4 py-3">Dự án</th>
+                                <th class="border-top-0 py-3">Danh mục</th>
+                                <th class="border-top-0 py-3">Ngày tạo</th>
+                                <th class="border-top-0 py-3 text-center">Trạng thái</th>
+                                <th class="border-top-0 py-3 text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let project of pagedProjects">
+                                <td class="pl-4">
+                                    <div class="font-weight-bold">{{ project.name }}</div>
+                                    <small class="text-hint">#{{ project.id }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge badge-light border">{{ project.categoryName }}</span>
+                                </td>
+                                <td>{{ project.createdAt | date:'dd/MM/yyyy' }}</td>
+                                <td class="text-center">
+                                    <span class="badge" [ngClass]="{
+                                            'badge-warning': project.projectStatus === 'planning',
+                                            'badge-info': project.projectStatus === 'handover',
+                                            'badge-success': project.projectStatus === 'completed'
+                                        }">
+                                        {{ project.projectStatus === 'planning' ? 'Đang lên kế hoạch' :
+                                        (project.projectStatus === 'handover' ? 'Bàn giao' : 'Hoàn thành') }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <button nbButton ghost status="info" size="small" nbTooltip="Xem chi tiết dự án">
+                                        <nb-icon icon="eye-outline"></nb-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="projects.length === 0">
+                                <td colspan="5" class="text-center p-5 text-hint">
+                                    User này chưa có dự án nào.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <!-- Pagination style similar to User List but adapted for card footer -->
+                <div class="d-flex justify-content-between align-items-center p-3 border-top"
+                    *ngIf="projects.length > pageSize">
+                    <div class="small text-hint">
+                        Hiển thị {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize,
+                        projects.length) }} / {{ projects.length }} kết quả
+                    </div>
+                    <div class="btn-group">
+                        <button nbButton ghost size="tiny" [disabled]="currentPage === 1" (click)="goToPage(1)">
+                            <nb-icon icon="arrowhead-left-outline"></nb-icon>
+                        </button>
+                        <button nbButton ghost size="tiny" [disabled]="currentPage === 1"
+                            (click)="goToPage(currentPage - 1)">
+                            <nb-icon icon="arrow-back-outline"></nb-icon>
+                        </button>
+                        <button nbButton ghost size="tiny" status="basic"
+                            style="cursor: default; pointer-events: none;">
+                            {{ currentPage }} / {{ totalPages }}
+                        </button>
+                        <button nbButton ghost size="tiny" [disabled]="currentPage === totalPages"
+                            (click)="goToPage(currentPage + 1)">
+                            <nb-icon icon="arrow-forward-outline"></nb-icon>
+                        </button>
+                        <button nbButton ghost size="tiny" [disabled]="currentPage === totalPages"
+                            (click)="goToPage(totalPages)">
+                            <nb-icon icon="arrowhead-right-outline"></nb-icon>
+                        </button>
+                    </div>
+                </div>
+            </nb-card-body>
+        </nb-card>
+    </div>
+</div>
