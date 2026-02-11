@@ -8,6 +8,7 @@ export class Project extends CrudModel {
     categoryName?: string; // Để hiển thị tên danh mục trong list
     projectStatus: ProjectStatus; // Trạng thái dự án: Đang lên kế hoạch/Bàn giao/Hoàn thành
     data: { [key: string]: any }; // Dữ liệu động theo category.schema
+    ownerName?: string; // Tên chủ sở hữu (username)
 
     constructor() {
         super();

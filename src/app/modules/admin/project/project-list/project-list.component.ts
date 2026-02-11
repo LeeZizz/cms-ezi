@@ -22,6 +22,9 @@ export class ProjectListComponent implements OnInit {
     // Filter & Search
     categories: Category[] = [];
     selectedCategoryId: number | null = null;
+    owners: string[] = [];
+    filteredOwners: string[] = [];
+    selectedOwner: string | null = null;
     searchKeyword: string = '';
 
     // Pagination
@@ -56,6 +59,7 @@ export class ProjectListComponent implements OnInit {
             this.type = params.get('type') as 'rent' | 'sale';
             this.typeLabel = this.type === 'rent' ? 'cho thuê' : 'bán';
             this.selectedCategoryId = null; // Reset filter khi chuyển type
+            this.selectedOwner = null;
             this.searchKeyword = '';
             this.currentPage = 1;
             this.loadCategories();
@@ -82,6 +86,7 @@ export class ProjectListComponent implements OnInit {
                 categoryName: 'Căn hộ ' + this.typeLabel,
                 projectStatus: 'planning',
                 data: { dientich: 75, gia: 15000000 },
+                ownerName: 'thangld',
             } as any,
             {
                 id: 2,
@@ -90,6 +95,7 @@ export class ProjectListComponent implements OnInit {
                 categoryName: 'Căn hộ ' + this.typeLabel,
                 projectStatus: 'handover',
                 data: { dientich: 68, gia: 12000000 },
+                ownerName: 'minhqv',
             } as any,
             {
                 id: 3,
@@ -98,6 +104,7 @@ export class ProjectListComponent implements OnInit {
                 categoryName: 'Nhà phố ' + this.typeLabel,
                 projectStatus: 'completed',
                 data: { dientich: 120, gia: 25000000 },
+                ownerName: 'chauvtm',
             } as any,
             {
                 id: 4,
@@ -106,6 +113,7 @@ export class ProjectListComponent implements OnInit {
                 categoryName: 'Biệt thự ' + this.typeLabel,
                 projectStatus: 'planning',
                 data: { dientich: 500, gia: 80000000 },
+                ownerName: 'anhlt',
             } as any,
             {
                 id: 5,
@@ -114,6 +122,7 @@ export class ProjectListComponent implements OnInit {
                 categoryName: 'Căn hộ ' + this.typeLabel,
                 projectStatus: 'completed',
                 data: { dientich: 90, gia: 18000000 },
+                ownerName: 'huonglt',
             } as any,
             {
                 id: 6,
@@ -122,6 +131,7 @@ export class ProjectListComponent implements OnInit {
                 categoryName: 'Nhà phố ' + this.typeLabel,
                 projectStatus: 'handover',
                 data: { dientich: 150, gia: 30000000 },
+                ownerName: 'chauvtm',
             } as any,
             {
                 id: 7,
@@ -130,6 +140,7 @@ export class ProjectListComponent implements OnInit {
                 categoryName: 'Biệt thự ' + this.typeLabel,
                 projectStatus: 'completed',
                 data: { dientich: 400, gia: 65000000 },
+                ownerName: 'anhlt',
             } as any,
             {
                 id: 8,
@@ -138,8 +149,14 @@ export class ProjectListComponent implements OnInit {
                 categoryName: 'Căn hộ ' + this.typeLabel,
                 projectStatus: 'planning',
                 data: { dientich: 85, gia: 20000000 },
+                ownerName: 'minhqv',
             } as any,
         ];
+
+        // Lấy danh sách owner duy nhất
+        this.owners = [...new Set(this.projects.map(p => p.ownerName).filter(name => !!name))] as string[];
+        this.filteredOwners = [...this.owners];
+
         this.applyFilter();
     }
 
@@ -151,12 +168,18 @@ export class ProjectListComponent implements OnInit {
             result = result.filter(p => p.categoryId === this.selectedCategoryId);
         }
 
+        // Lọc theo chủ sở hữu
+        if (this.selectedOwner) {
+            result = result.filter(p => p.ownerName === this.selectedOwner);
+        }
+
         // Lọc theo từ khóa tìm kiếm
         if (this.searchKeyword.trim()) {
             const keyword = this.searchKeyword.toLowerCase().trim();
             result = result.filter(p =>
                 p.name.toLowerCase().includes(keyword) ||
-                p.categoryName?.toLowerCase().includes(keyword)
+                p.categoryName?.toLowerCase().includes(keyword) ||
+                p.ownerName?.toLowerCase().includes(keyword)
             );
         }
 
@@ -168,9 +191,20 @@ export class ProjectListComponent implements OnInit {
         this.applyFilter();
     }
 
+    onOwnerFilterChange() {
+        this.currentPage = 1;
+        this.applyFilter();
+    }
+
     onSearch() {
         this.currentPage = 1;
         this.applyFilter();
+    }
+
+    handleOwnerSearch(event: any) {
+        event.stopPropagation(); // Ngăn chặn sự kiện lan truyền
+        const keyword = event.target.value.toLowerCase();
+        this.filteredOwners = this.owners.filter(o => o.toLowerCase().includes(keyword));
     }
 
     clearSearch() {
