@@ -3,6 +3,15 @@
     <h4 class="mb-0">Chi tiết User</h4>
 </div> -->
 
+<!-- Header with Back button -->
+<div class="detail-header mb-3" *ngIf="user">
+    <button nbButton ghost status="basic" (click)="goBack()" class="back-btn">
+        <nb-icon icon="arrow-back-outline"></nb-icon>
+        Quay lại
+    </button>
+    <!-- <h5 class="mb-0 font-weight-bold">{{ user.fullName }}</h5> -->
+</div>
+
 <div class="row" *ngIf="user">
     <!-- LEFT SIDEBAR: PROFILE & INFO -->
     <div class="col-lg-3 left-sidebar">
@@ -11,14 +20,14 @@
                 <div class="avatar-container">
                     <img [src]="user.avatarUrl || 'assets/images/default-avatar.png'" alt="Avatar">
                     <div class="source-badge">
-                        <ng-container *ngIf="isEziSource(user.source); else otherSourceIcons">
-                            <div class="ezi-icon">EZI</div>
+                        <ng-container [ngSwitch]="user.source">
+                            <img *ngSwitchCase="'ezi'" src="/favicon.ico" alt="EZI" class="ezi-icon">
+                            <img *ngSwitchCase="'facebook'" src="assets/images/logo-facebook.svg" alt="Facebook"
+                                class="ezi-icon">
+                            <img *ngSwitchCase="'google'" src="assets/images/logo-google.svg" alt="Google"
+                                class="ezi-icon">
+                            <img *ngSwitchDefault src="assets/images/logo-web.svg" alt="Web" class="ezi-icon">
                         </ng-container>
-                        <ng-template #otherSourceIcons>
-                            <nb-icon *ngIf="user.source === 'facebook'" icon="facebook" pack="eva"></nb-icon>
-                            <nb-icon *ngIf="user.source === 'google'" icon="google" pack="eva"></nb-icon>
-                            <nb-icon *ngIf="user.source === 'zalo'" icon="message-circle-outline" pack="eva"></nb-icon>
-                        </ng-template>
                     </div>
                 </div>
                 <h5 class="font-weight-bold mb-1">{{ user.fullName }}</h5>
@@ -76,22 +85,36 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon success">
-                    <nb-icon icon="checkmark-circle-2-outline"></nb-icon>
+                <div class="stat-icon info">
+                    <nb-icon icon="home-outline"></nb-icon>
                 </div>
                 <div class="stat-details">
-                    <h3>{{ user.projectCountRent + user.projectCountSale }}</h3>
-                    <span>Dự án Active</span>
+                    <h3>{{ user.projectCountRent }}</h3>
+                    <span>Cho thuê</span>
                 </div>
             </div>
-            <!-- Placeholder Stat -->
             <div class="stat-card">
-                <div class="stat-icon info">
-                    <nb-icon icon="star-outline"></nb-icon>
+                <div class="stat-icon success">
+                    <nb-icon icon="pricetags-outline"></nb-icon>
                 </div>
                 <div class="stat-details">
-                    <h3>Pro</h3>
-                    <span>Hạng thành viên</span>
+                    <h3>{{ user.projectCountSale }}</h3>
+                    <span>Bán</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" [ngClass]="{
+                    'synced': user.status === 'synced',
+                    'warning': user.status === 'not_synced',
+                    'danger': user.status === 'sync_error'
+                }">
+                    <nb-icon [icon]="user.status === 'synced' ? 'checkmark-circle-2-outline' :
+                        (user.status === 'not_synced' ? 'clock-outline' : 'alert-triangle-outline')"></nb-icon>
+                </div>
+                <div class="stat-details">
+                    <h3>{{ user.status === 'synced' ? 'OK' :
+                        (user.status === 'not_synced' ? 'Chờ' : 'Lỗi') }}</h3>
+                    <span>Đồng bộ</span>
                 </div>
             </div>
         </div>

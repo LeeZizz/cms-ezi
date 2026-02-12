@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
-import { SyncSource, User, UserStatus } from '../../../../models/admin/user';
+import { User, UserStatus } from '../../../../models/admin/user';
 import { UserManagementService } from '../services/user-management.service';
 
 @Component({
@@ -209,10 +209,7 @@ export class UserDetailComponent implements OnInit {
     this.projects = filtered;
   }
 
-  // New logic: Use distinct Ezi icon (or placeholder image/icon)
-  isEziSource(source: SyncSource | undefined): boolean {
-    return source === SyncSource.EZI;
-  }
+
 
   get pagedProjects(): any[] {
     const start = (this.currentPage - 1) * this.pageSize;

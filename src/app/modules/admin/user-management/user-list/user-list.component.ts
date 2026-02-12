@@ -15,6 +15,7 @@ export class UserListComponent implements OnInit {
   // Search & Filter
   searchKeyword: string = '';
   selectedStatus: UserStatus | 'all' = 'all';
+  selectedSource: SyncSource | 'all' = 'all';
 
   // Pagination
   pageSize: number = 5;
@@ -50,6 +51,11 @@ export class UserListComponent implements OnInit {
     // Filter by Status
     if (this.selectedStatus !== 'all') {
       result = result.filter(u => u.status === this.selectedStatus);
+    }
+
+    // Filter by Source
+    if (this.selectedSource !== 'all') {
+      result = result.filter(u => u.source === this.selectedSource);
     }
 
     // Search by keyword
@@ -107,10 +113,29 @@ export class UserListComponent implements OnInit {
     });
   }
 
+  retrySync(user: User) {
+    this.toastr.info(`Đang thử đồng bộ lại ${user.fullName}...`, 'Thông báo');
+    setTimeout(() => {
+      user.status = UserStatus.SYNCED;
+      user.lastSyncedAt = new Date();
+      this.toastr.success(`Đồng bộ ${user.fullName} thành công!`, 'Thông báo');
+      this.applyFilter();
+    }, 1500);
+  }
 
+  removeUser(user: User) {
+    if (confirm(`Bạn có chắc muốn xóa ${user.fullName} khỏi hệ thống?`)) {
+      this.users = this.users.filter(u => u.id !== user.id);
+      this.applyFilter();
+      this.toastr.success(`Đã xóa ${user.fullName}`, 'Thành công');
+    }
+  }
 
-  // New logic: Use distinct Ezi icon (or placeholder image/icon)
-  isEziSource(source: SyncSource): boolean {
-    return source === SyncSource.EZI;
+  countBySource(source: string): number {
+    return this.users.filter(u => u.source === source).length;
+  }
+
+  countByStatus(status: string): number {
+    return this.users.filter(u => u.status === status).length;
   }
 }

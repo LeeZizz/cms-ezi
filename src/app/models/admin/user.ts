@@ -1,17 +1,15 @@
 
 export enum UserStatus {
-    ACTIVE = 'active',
-    INACTIVE = 'inactive',
-    BLOCKED = 'blocked',
+    NOT_SYNCED = 'not_synced',
+    SYNCED = 'synced',
     SYNC_ERROR = 'sync_error'
 }
 
 export enum SyncSource {
-    GOOGLE = 'google',
+    EZI = 'ezi',
     FACEBOOK = 'facebook',
-    SYSTEM = 'system',
-    ZALO = 'zalo',
-    EZI = 'ezi' // Ezi Solution (Web)
+    GOOGLE = 'google',
+    WEB = 'web' // Nguồn khác (website, hệ thống...)
 }
 
 export interface User {
@@ -34,4 +32,5 @@ export interface User {
     // Metadata
     source: SyncSource;
     lastSyncedAt: Date;
+    createdAt?: Date;
 }

@@ -44,8 +44,8 @@ export class ProjectCategoryFormComponent implements OnInit {
         { value: 'date', label: 'Ngày tháng (Date)' },
         { value: 'select', label: 'Lựa chọn (Select)' },
         { value: 'html', label: 'Siêu văn bản (HTML)' },
-        { value: 'images', label: 'Nhiều ảnh (Images)' },
-        { value: 'video', label: 'Video' },
+        { value: 'images', label: 'Bộ sưu tập ảnh (Images)' },
+        { value: 'video', label: 'Bộ sưu tập video (Video)' },
     ];
 
     constructor(
@@ -182,6 +182,44 @@ export class ProjectCategoryFormComponent implements OnInit {
         return this.schemaFormArray.controls.indexOf(field);
     }
 
+    // === Options Management (cho trường select) ===
+
+    // TrackBy cho ngFor - giữ focus khi gõ
+    trackByIndex(index: number): number {
+        return index;
+    }
+
+    // Parse string options thành array
+    getOptionsList(field: any): string[] {
+        const optionsStr = field.get('options')?.value || '';
+        if (!optionsStr) return [''];
+        const list = optionsStr.split('\n');
+        return list.length === 0 ? [''] : list;
+    }
+
+    // Cập nhật 1 option theo index
+    updateOption(field: any, index: number, value: string) {
+        const list = this.getOptionsList(field);
+        list[index] = value;
+        field.get('options').setValue(list.join('\n'));
+    }
+
+    // Thêm option mới
+    addOption(field: any, event?: Event) {
+        if (event) event.preventDefault();
+        const list = this.getOptionsList(field);
+        list.push('');
+        field.get('options').setValue(list.join('\n'));
+    }
+
+    // Xóa option theo index
+    removeOption(field: any, index: number) {
+        const list = this.getOptionsList(field);
+        if (list.length <= 1) return;
+        list.splice(index, 1);
+        field.get('options').setValue(list.join('\n'));
+    }
+
     loadCategory() {
         // Mock data cho edit mode
         // TODO: Thay bằng API call thực tế
@@ -193,10 +231,10 @@ export class ProjectCategoryFormComponent implements OnInit {
             schema: [
                 { code: 'dientich', label: 'Diện tích (m²)', type: 'number', required: true, description: 'Diện tích sử dụng', placeholder: 'Nhập diện tích...', defaultValue: '', options: '' },
                 { code: 'sophongngu', label: 'Số phòng ngủ', type: 'number', required: true, description: '', placeholder: '', defaultValue: '2', options: '' },
-                { code: 'huong', label: 'Hướng', type: 'select', required: false, description: 'Hướng của căn hộ', placeholder: 'Chọn hướng', defaultValue: 'Đông', options: 'Đông, Tây, Nam, Bắc, Đông Nam, Tây Nam, Đông Bắc, Tây Bắc' },
+                { code: 'huong', label: 'Hướng', type: 'select', required: false, description: 'Hướng của căn hộ', placeholder: 'Chọn hướng', defaultValue: 'Đông', options: 'Đông\nTây\nNam\nBắc\nĐông Nam\nTây Nam\nĐông Bắc\nTây Bắc' },
                 { code: 'gia', label: 'Giá thuê/tháng', type: 'number', required: true, description: '', placeholder: 'Nhập giá...', defaultValue: '', options: '' },
                 { code: 'sophongvesinh', label: 'Số phòng vệ sinh', type: 'number', required: false, description: 'Số phòng tắm/WC', placeholder: 'Nhập số...', defaultValue: '1', options: '' },
-                { code: 'noithat', label: 'Nội thất', type: 'select', required: false, description: 'Tình trạng nội thất', placeholder: 'Chọn...', defaultValue: '', options: 'Đầy đủ, Cơ bản, Trống' },
+                { code: 'noithat', label: 'Nội thất', type: 'select', required: false, description: 'Tình trạng nội thất', placeholder: 'Chọn...', defaultValue: '', options: 'Đầy đủ\nCơ bản\nTrống' },
             ]
         };
 
@@ -232,10 +270,10 @@ export class ProjectCategoryFormComponent implements OnInit {
         const value = this.categoryForm.value;
         value.type = this.type;
 
-        // Chuyển đổi options từ string sang array
+        // Chuyển đổi options từ string (mỗi dòng 1 lựa chọn) sang array
         value.schema = value.schema.map(f => ({
             ...f,
-            options: f.options ? f.options.split(',').map(o => {
+            options: f.options ? f.options.split('\n').filter(o => o.trim()).map(o => {
                 const parts = o.trim().split('|');
                 return {
                     value: parts[0]?.trim() || '',

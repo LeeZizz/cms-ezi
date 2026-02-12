@@ -1,7 +1,7 @@
 <nb-card>
     <nb-card-header>
         <div class="header-container">
-            <span>Quản lý chủ dự án</span>
+            <h5 class="page-title">Quản lý chủ dự án</h5>
             <div class="filter-container">
                 <!-- Search Box -->
                 <div class="search-box">
@@ -17,9 +17,19 @@
                 <nb-select placeholder="Trạng thái" size="small" [(ngModel)]="selectedStatus"
                     (selectedChange)="onFilterChange()" style="min-width: 150px;">
                     <nb-option value="all">Tất cả trạng thái</nb-option>
-                    <nb-option value="active">Active</nb-option>
-                    <nb-option value="blocked">Blocked</nb-option>
+                    <nb-option value="not_synced">Chưa đồng bộ</nb-option>
+                    <nb-option value="synced">Đã đồng bộ</nb-option>
                     <nb-option value="sync_error">Lỗi đồng bộ</nb-option>
+                </nb-select>
+
+                <!-- Filter Source -->
+                <nb-select placeholder="Nguồn" size="small" [(ngModel)]="selectedSource"
+                    (selectedChange)="onFilterChange()" style="min-width: 130px;">
+                    <nb-option value="all">Tất cả nguồn</nb-option>
+                    <nb-option value="ezi">EZI</nb-option>
+                    <nb-option value="facebook">Facebook</nb-option>
+                    <nb-option value="google">Google</nb-option>
+                    <nb-option value="web">Web</nb-option>
                 </nb-select>
 
                 <!-- Sync Button -->
@@ -31,21 +41,72 @@
         </div>
     </nb-card-header>
     <nb-card-body>
+        <!-- Dashboard Mini Stats -->
+        <div class="stats-row mb-3">
+            <div class="mini-stat">
+                <div class="mini-stat-icon total">
+                    <nb-icon icon="people-outline"></nb-icon>
+                </div>
+                <div class="mini-stat-info">
+                    <span class="mini-stat-value">{{ users.length }}</span>
+                    <span class="mini-stat-label">Tổng user</span>
+                </div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-icon ezi">
+                    <img src="/favicon.ico" alt="EZI" style="width: 18px; height: 18px;">
+                </div>
+                <div class="mini-stat-info">
+                    <span class="mini-stat-value">{{ countBySource('ezi') }}</span>
+                    <span class="mini-stat-label">EZI</span>
+                </div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-icon facebook">
+                    <img src="assets/images/logo-facebook.svg" alt="FB" style="width: 18px; height: 18px;">
+                </div>
+                <div class="mini-stat-info">
+                    <span class="mini-stat-value">{{ countBySource('facebook') }}</span>
+                    <span class="mini-stat-label">Facebook</span>
+                </div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-icon google">
+                    <img src="assets/images/logo-google.svg" alt="GG" style="width: 18px; height: 18px;">
+                </div>
+                <div class="mini-stat-info">
+                    <span class="mini-stat-value">{{ countBySource('google') }}</span>
+                    <span class="mini-stat-label">Google</span>
+                </div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-icon synced">
+                    <nb-icon icon="checkmark-circle-2-outline"></nb-icon>
+                </div>
+                <div class="mini-stat-info">
+                    <span class="mini-stat-value">{{ countByStatus('synced') }}</span>
+                    <span class="mini-stat-label">Đã đồng bộ</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Table -->
         <div class="table-responsive">
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th style="width: 300px;">Chủ dự án</th>
+                        <th style="width: 280px;">Chủ dự án</th>
                         <th>Liên hệ</th>
                         <th class="text-center">Số lượng dự án</th>
                         <th class="text-center">Nguồn</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Đồng bộ lần cuối</th>
                         <th class="text-center">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngIf="isLoading">
-                        <td colspan="5" class="text-center p-4">
+                        <td colspan="7" class="text-center p-4">
                             <nb-spinner status="primary"></nb-spinner>
                         </td>
                     </tr>
@@ -72,30 +133,47 @@
                             </div>
                         </td>
                         <td class="text-center">
-                            <!-- Ezi Source Handling -->
-                            <ng-container *ngIf="isEziSource(user.source); else otherSources">
-                                <div class="ezi-source-badge" nbTooltip="Ezi Solution (Web)">
-                                    <span class="font-weight-bold text-primary">EZI</span>
-                                </div>
+                            <ng-container [ngSwitch]="user.source">
+                                <img *ngSwitchCase="'ezi'" src="/favicon.ico" alt="EZI" class="source-logo"
+                                    nbTooltip="Ezi Solutions">
+                                <img *ngSwitchCase="'facebook'" src="assets/images/logo-facebook.svg" alt="Facebook"
+                                    class="source-logo" nbTooltip="Facebook">
+                                <img *ngSwitchCase="'google'" src="assets/images/logo-google.svg" alt="Google"
+                                    class="source-logo" nbTooltip="Google">
+                                <img *ngSwitchDefault src="assets/images/logo-web.svg" alt="Web" class="source-logo"
+                                    nbTooltip="Website">
                             </ng-container>
-                            <ng-template #otherSources>
-                                <nb-icon *ngIf="user.source === 'facebook'" icon="facebook" pack="eva" status="primary"
-                                    style="font-size: 1.5rem;"></nb-icon>
-                                <nb-icon *ngIf="user.source === 'google'" icon="google" pack="eva" status="danger"
-                                    style="font-size: 1.5rem;"></nb-icon>
-                                <nb-icon *ngIf="user.source === 'zalo'" icon="message-circle-outline" pack="eva"
-                                    status="info" style="font-size: 1.5rem;"></nb-icon>
-                            </ng-template>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge" [ngClass]="{
+                                'badge-success': user.status === 'synced',
+                                'badge-warning': user.status === 'not_synced',
+                                'badge-danger': user.status === 'sync_error'
+                            }">
+                                {{ user.status === 'synced' ? 'Đã đồng bộ' :
+                                (user.status === 'not_synced' ? 'Chưa đồng bộ' : 'Lỗi') }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <small class="text-muted">{{ user.lastSyncedAt | date:'dd/MM/yyyy HH:mm' }}</small>
                         </td>
                         <td class="action-cell text-center">
                             <button nbButton ghost status="primary" size="small"
                                 [routerLink]="['/admin/users', user.id]" nbTooltip="Xem chi tiết">
                                 <nb-icon icon="eye-outline"></nb-icon>
                             </button>
+                            <button nbButton ghost status="info" size="small" nbTooltip="Đồng bộ lại"
+                                (click)="retrySync(user)">
+                                <nb-icon icon="sync-outline"></nb-icon>
+                            </button>
+                            <button nbButton ghost status="danger" size="small" nbTooltip="Xóa khỏi hệ thống"
+                                (click)="removeUser(user)">
+                                <nb-icon icon="trash-2-outline"></nb-icon>
+                            </button>
                         </td>
                     </tr>
                     <tr *ngIf="!isLoading && pagedUsers.length === 0">
-                        <td colspan="5" class="text-center text-muted">
+                        <td colspan="7" class="text-center text-muted">
                             <span *ngIf="searchKeyword">Không tìm thấy user phù hợp</span>
                             <span *ngIf="!searchKeyword">Chưa có user nào</span>
                         </td>
