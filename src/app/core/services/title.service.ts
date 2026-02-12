@@ -1,11 +1,11 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {distinctUntilChanged} from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable()
 export class TitleService {
 
-  titleSubject: BehaviorSubject<string> = new BehaviorSubject<string>('Welcome to our system!');
+  titleSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
   titleSubject$: Observable<string> = this.titleSubject.pipe(distinctUntilChanged());
 
   setTitle(newTitle: string) {

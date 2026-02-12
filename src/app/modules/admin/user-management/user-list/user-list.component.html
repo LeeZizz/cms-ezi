@@ -1,0 +1,211 @@
+<nb-card>
+    <nb-card-header>
+        <div class="header-container">
+            <h5 class="page-title">Quản lý chủ dự án</h5>
+            <div class="filter-container">
+                <!-- Search Box -->
+                <div class="search-box">
+                    <nb-icon icon="search-outline" class="search-icon"></nb-icon>
+                    <input nbInput size="small" placeholder="Tìm User..." [(ngModel)]="searchKeyword"
+                        (keyup.enter)="onSearch()">
+                    <button nbButton ghost size="small" class="clear-btn" *ngIf="searchKeyword" (click)="clearSearch()">
+                        <nb-icon icon="close-outline"></nb-icon>
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <nb-select placeholder="Trạng thái" size="small" [(ngModel)]="selectedStatus"
+                    (selectedChange)="onFilterChange()" style="min-width: 150px;">
+                    <nb-option value="all">Tất cả trạng thái</nb-option>
+                    <nb-option value="not_synced">Chưa đồng bộ</nb-option>
+                    <nb-option value="synced">Đã đồng bộ</nb-option>
+                    <nb-option value="sync_error">Lỗi đồng bộ</nb-option>
+                </nb-select>
+
+                <!-- Filter Source -->
+                <nb-select placeholder="Nguồn" size="small" [(ngModel)]="selectedSource"
+                    (selectedChange)="onFilterChange()" style="min-width: 130px;">
+                    <nb-option value="all">Tất cả nguồn</nb-option>
+                    <nb-option value="ezi">EZI</nb-option>
+                    <nb-option value="facebook">Facebook</nb-option>
+                    <nb-option value="google">Google</nb-option>
+                    <nb-option value="web">Web</nb-option>
+                </nb-select>
+
+                <!-- Sync Button -->
+                <button nbButton status="primary" size="small" (click)="syncAll()" [disabled]="isSyncing">
+                    <nb-icon icon="sync-outline" [class.fa-spin]="isSyncing"></nb-icon>
+                    {{ isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ' }}
+                </button>
+            </div>
+        </div>
+    </nb-card-header>
+    <nb-card-body>
+        <!-- Dashboard Mini Stats -->
+        <div class="stats-row mb-3">
+            <div class="mini-stat">
+                <div class="mini-stat-icon total">
+                    <nb-icon icon="people-outline"></nb-icon>
+                </div>
+                <div class="mini-stat-info">
+                    <span class="mini-stat-value">{{ users.length }}</span>
+                    <span class="mini-stat-label">Tổng user</span>
+                </div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-icon ezi">
+                    <img src="/favicon.ico" alt="EZI" style="width: 18px; height: 18px;">
+                </div>
+                <div class="mini-stat-info">
+                    <span class="mini-stat-value">{{ countBySource('ezi') }}</span>
+                    <span class="mini-stat-label">EZI</span>
+                </div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-icon facebook">
+                    <img src="assets/images/logo-facebook.svg" alt="FB" style="width: 18px; height: 18px;">
+                </div>
+                <div class="mini-stat-info">
+                    <span class="mini-stat-value">{{ countBySource('facebook') }}</span>
+                    <span class="mini-stat-label">Facebook</span>
+                </div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-icon google">
+                    <img src="assets/images/logo-google.svg" alt="GG" style="width: 18px; height: 18px;">
+                </div>
+                <div class="mini-stat-info">
+                    <span class="mini-stat-value">{{ countBySource('google') }}</span>
+                    <span class="mini-stat-label">Google</span>
+                </div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-icon synced">
+                    <nb-icon icon="checkmark-circle-2-outline"></nb-icon>
+                </div>
+                <div class="mini-stat-info">
+                    <span class="mini-stat-value">{{ countByStatus('synced') }}</span>
+                    <span class="mini-stat-label">Đã đồng bộ</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th style="width: 280px;">Chủ dự án</th>
+                        <th>Liên hệ</th>
+                        <th class="text-center">Số lượng dự án</th>
+                        <th class="text-center">Nguồn</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Đồng bộ lần cuối</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="isLoading">
+                        <td colspan="7" class="text-center p-4">
+                            <nb-spinner status="primary"></nb-spinner>
+                        </td>
+                    </tr>
+                    <tr *ngFor="let user of pagedUsers">
+                        <td>
+                            <nb-user [name]="user.fullName" [picture]="user.avatarUrl" size="medium"
+                                [title]="'@' + user.username">
+                            </nb-user>
+                        </td>
+                        <td>
+                            <div class="small">
+                                <div><nb-icon icon="email-outline" pack="eva" class="mr-1 text-muted"></nb-icon> {{
+                                    user.email }}</div>
+                                <div *ngIf="user.phoneNumber"><nb-icon icon="phone-outline" pack="eva"
+                                        class="mr-1 text-muted"></nb-icon> {{ user.phoneNumber }}</div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center">
+                                <span class="badge badge-info mr-2" nbTooltip="Dự án cho thuê">{{ user.projectCountRent
+                                    }} Thuê</span>
+                                <span class="badge badge-success" nbTooltip="Dự án bán">{{ user.projectCountSale }}
+                                    Bán</span>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <ng-container [ngSwitch]="user.source">
+                                <img *ngSwitchCase="'ezi'" src="/favicon.ico" alt="EZI" class="source-logo"
+                                    nbTooltip="Ezi Solutions">
+                                <img *ngSwitchCase="'facebook'" src="assets/images/logo-facebook.svg" alt="Facebook"
+                                    class="source-logo" nbTooltip="Facebook">
+                                <img *ngSwitchCase="'google'" src="assets/images/logo-google.svg" alt="Google"
+                                    class="source-logo" nbTooltip="Google">
+                                <img *ngSwitchDefault src="assets/images/logo-web.svg" alt="Web" class="source-logo"
+                                    nbTooltip="Website">
+                            </ng-container>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge" [ngClass]="{
+                                'badge-success': user.status === 'synced',
+                                'badge-warning': user.status === 'not_synced',
+                                'badge-danger': user.status === 'sync_error'
+                            }">
+                                {{ user.status === 'synced' ? 'Đã đồng bộ' :
+                                (user.status === 'not_synced' ? 'Chưa đồng bộ' : 'Lỗi') }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <small class="text-muted">{{ user.lastSyncedAt | date:'dd/MM/yyyy HH:mm' }}</small>
+                        </td>
+                        <td class="action-cell text-center">
+                            <button nbButton ghost status="primary" size="small"
+                                [routerLink]="['/admin/users', user.id]" nbTooltip="Xem chi tiết">
+                                <nb-icon icon="eye-outline"></nb-icon>
+                            </button>
+                            <button nbButton ghost status="info" size="small" nbTooltip="Đồng bộ lại"
+                                (click)="retrySync(user)">
+                                <nb-icon icon="sync-outline"></nb-icon>
+                            </button>
+                            <button nbButton ghost status="danger" size="small" nbTooltip="Xóa khỏi hệ thống"
+                                (click)="removeUser(user)">
+                                <nb-icon icon="trash-2-outline"></nb-icon>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="!isLoading && pagedUsers.length === 0">
+                        <td colspan="7" class="text-center text-muted">
+                            <span *ngIf="searchKeyword">Không tìm thấy user phù hợp</span>
+                            <span *ngIf="!searchKeyword">Chưa có user nào</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container" *ngIf="filteredUsers.length > pageSize">
+            <div class="pagination-info">
+                Hiển thị {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize,
+                filteredUsers.length) }} / {{ filteredUsers.length }} kết quả
+            </div>
+
+            <div class="pagination-controls">
+                <button nbButton ghost size="small" [disabled]="currentPage === 1" (click)="goToPage(1)">
+                    <nb-icon icon="arrowhead-left-outline"></nb-icon>
+                </button>
+                <button nbButton ghost size="small" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+                    <nb-icon icon="arrow-back-outline"></nb-icon>
+                </button>
+                <span class="page-number">Trang {{ currentPage }} / {{ totalPages }}</span>
+                <button nbButton ghost size="small" [disabled]="currentPage === totalPages"
+                    (click)="goToPage(currentPage + 1)">
+                    <nb-icon icon="arrow-forward-outline"></nb-icon>
+                </button>
+                <button nbButton ghost size="small" [disabled]="currentPage === totalPages"
+                    (click)="goToPage(totalPages)">
+                    <nb-icon icon="arrowhead-right-outline"></nb-icon>
+                </button>
+            </div>
+        </div>
+    </nb-card-body>
+</nb-card>
