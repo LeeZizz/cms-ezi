@@ -3,6 +3,16 @@
     margin-left: 0.5rem;
 }
 
+.page-title {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #222b45;
+    padding-left: 12px;
+    border-left: 3px solid #3366ff;
+    line-height: 1.3;
+}
+
 /* Section Header */
 .fields-section {
     margin-top: 1rem;
@@ -210,6 +220,47 @@
     margin-bottom: 0.25rem;
     font-weight: bold;
     display: block;
+}
+
+/* Options List (Select field) */
+.options-section {
+    margin-top: 0.5rem;
+    border-top: 1px dashed #edf1f7;
+    padding-top: 0.75rem;
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.option-index {
+    min-width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #f0f4ff;
+    color: #3366ff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.option-item input {
+    flex: 1;
+}
+
+.add-option-btn {
+    margin-top: 8px;
 }
 
 /* Empty State - Icon căn giữa */

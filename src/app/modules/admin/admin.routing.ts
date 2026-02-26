@@ -9,5 +9,9 @@ export const ADMIN_ROUTES: Routes = [
         path: 'project',
         loadChildren: () => import('./project/project.module').then(m => m.ProjectModule),
     },
+    {
+        path: 'users',
+        loadChildren: () => import('./user-management/user-management.module').then(m => m.UserManagementModule),
+    },
 ];
 

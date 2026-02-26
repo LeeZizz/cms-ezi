@@ -34,6 +34,11 @@ export const ADMIN_MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
+  {
+    title: 'Quản lý chủ dự án',
+    icon: 'people-outline',
+    link: '/admin/users',
+  },
 ];
 
 

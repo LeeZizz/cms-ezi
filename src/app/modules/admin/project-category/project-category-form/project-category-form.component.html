@@ -1,5 +1,7 @@
 <nb-card>
-    <nb-card-header>{{ isEdit ? 'Sửa' : 'Tạo mới' }} danh mục dự án ({{ typeLabel }})</nb-card-header>
+    <nb-card-header>
+        <h5 class="page-title">{{ isEdit ? 'Sửa' : 'Tạo mới' }} danh mục dự án ({{ typeLabel }})</h5>
+    </nb-card-header>
     <nb-card-body>
         <form [formGroup]="categoryForm">
             <!-- Thông tin cơ bản -->
@@ -132,12 +134,28 @@
                                                 </div>
                                             </div>
                                             <!-- Row 3: Options (chỉ hiện khi type = select) -->
-                                            <div class="row" *ngIf="field.get('type')?.value === 'select'">
-                                                <div class="col-md-12">
-                                                    <label class="label-small">Các lựa chọn (cách bởi dấu phẩy)</label>
-                                                    <input nbInput fullWidth size="small"
-                                                        placeholder="Đông, Tây, Nam, Bắc" formControlName="options">
+                                            <div class="options-section" *ngIf="field.get('type')?.value === 'select'">
+                                                <label class="label-small">Các lựa chọn</label>
+                                                <div class="options-list">
+                                                    <div class="option-item"
+                                                        *ngFor="let opt of getOptionsList(field); let oi = index; trackBy: trackByIndex">
+                                                        <span class="option-index">{{ oi + 1 }}</span>
+                                                        <input nbInput fullWidth size="small" [value]="opt"
+                                                            placeholder="Nhập lựa chọn..."
+                                                            (input)="updateOption(field, oi, $event.target.value)"
+                                                            (keydown.enter)="addOption(field, $event)">
+                                                        <button nbButton ghost status="danger" size="tiny"
+                                                            (click)="removeOption(field, oi)"
+                                                            [disabled]="getOptionsList(field).length <= 1"
+                                                            title="Xóa lựa chọn">
+                                                            <nb-icon icon="close-outline"></nb-icon>
+                                                        </button>
+                                                    </div>
                                                 </div>
+                                                <button nbButton ghost status="primary" size="small"
+                                                    class="add-option-btn" (click)="addOption(field, $event)">
+                                                    <nb-icon icon="plus-outline"></nb-icon> Thêm lựa chọn
+                                                </button>
                                             </div>
                                         </div>
                                         <!-- Panel Footer -->
